@@ -12,7 +12,7 @@ export function ErrorModal({ isVisible, closeHandler, message }) {
             <Text b size={18}>
                 Ops! 
                 </Text>
-                    Something bad happened!
+                    Something bad happened! 🪲
             </Text>
         </Modal.Header>
         <Modal.Body>

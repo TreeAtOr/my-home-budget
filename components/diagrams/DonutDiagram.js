@@ -4,7 +4,7 @@ import { Doughnut } from 'react-chartjs-2';
 export default function DonutDiagram({ data, title }) {
     console.log(data);
     return (
-        <Card css={{ mw: "429px" }}>
+        <Card css={{ mw: "429px", mh: "493px" }}>
             <Card.Header>
                 <Row justify='center'>
                     <Text size={16} b color='grey'>{title}</Text>

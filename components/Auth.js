@@ -46,44 +46,46 @@ export default function Auth() {
   const errorCloseHandler = () => setErrorVisible(false)
 
   return (
-    <Container fluid alignItems="center" justify='center'>
-      <MagicLinkModal closeHandler={alertCloseHandler} isVisible={isAlertVisible} />
-      <ErrorModal closeHandler={errorCloseHandler} isVisible={isErrorVisible} message={errorMessage} />
+    <Container alignItems="center" css={{ height: '80vh', display: 'flex', justifyContent: 'center' }}>
+      <Container>
+        <MagicLinkModal closeHandler={alertCloseHandler} isVisible={isAlertVisible} />
+        <ErrorModal closeHandler={errorCloseHandler} isVisible={isErrorVisible} message={errorMessage} />
 
-      <Row justify="center" >
-        <Text size={32} b>My Home Budget</Text>
-      </Row>
-      <Row justify="center" >
-        <Text size={16}>Sign in via magic link with your email below</Text>
-      </Row>
-      <Spacer y={2} />
-      <Row justify="center" >
-        <Input
-          size="md"
-          type="email"
-          placeholder="Your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <Spacer x={1} />
-        <Button
-          onClick={(e) => {
-            e.preventDefault()
-            handleLogin(email)
-          }}
-          size="md"
-          disabled={loading}
-        >
-          <span>{loading ? 'Loading' : 'Send magic link'}</span>
-        </Button>
-      </Row>
-      <Spacer y={0.5} />
-      <Row justify="center"><Text size={18} color="gray">OR</Text></Row>
-      <Spacer y={0.5} />
-      <Row justify="center"><Button color="primary" onClick={(e) => {
-            e.preventDefault()
-            handleOAuth("google")
-          }}  disabled={loading}>Sign with Google<Spacer y={0.5} /><FontAwesomeIcon icon={faGoogle}/></Button></Row>
+        <Row justify="center" >
+          <Text size={32} b>My Home Budget</Text>
+        </Row>
+        <Row justify="center" >
+          <Text size={16}>Sign in via magic link with your email below</Text>
+        </Row>
+        <Spacer y={2} />
+        <Row justify="center" >
+          <Input
+            size="md"
+            type="email"
+            placeholder="Your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Spacer x={1} />
+          <Button
+            onClick={(e) => {
+              e.preventDefault()
+              handleLogin(email)
+            }}
+            size="md"
+            disabled={loading}
+          >
+            <span>{loading ? 'Loading' : 'Send magic link'}</span>
+          </Button>
+        </Row>
+        <Spacer y={0.5} />
+        <Row justify="center"><Text size={18} color="gray">OR</Text></Row>
+        <Spacer y={0.5} />
+        <Row justify="center"><Button color="primary" onClick={(e) => {
+          e.preventDefault()
+          handleOAuth("google")
+        }} disabled={loading}>Sign with Google<Spacer y={0.5} /><FontAwesomeIcon icon={faGoogle} /></Button></Row>
+      </Container>
     </Container>
   )
 }

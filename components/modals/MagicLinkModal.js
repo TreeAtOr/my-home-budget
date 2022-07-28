@@ -9,15 +9,15 @@ export function MagicLinkModal({ isVisible, closeHandler }) {
     >
         <Modal.Header>
             <Text id="modal-title" size={18}>
-                {"Today you looks "}
+            🎉{"Today you looks "}
                 <Text b size={18}>
                     awesome
-                </Text>
+                </Text>🎉
             </Text>
         </Modal.Header>
         <Modal.Body>
             <Text size={18}>
-                Check the email for magic link
+                Check the email for magic link.
             </Text>
         </Modal.Body>
         <Modal.Footer>

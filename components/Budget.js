@@ -1,10 +1,11 @@
-import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card } from '@nextui-org/react';
+import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card, Link } from '@nextui-org/react';
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import BarDiagram from './diagrams/BarDiagram';
 import DonutDiagram from './diagrams/DonutDiagram';
 import { AddRecordModal } from './modals/AddRecordModal';
 import { ErrorModal } from './modals/ErrorModal';
+import { InformationModal } from './modals/InformationModal';
 import { SpendingTable } from './tables/SpendingTable';
 import { TotalTable } from './tables/TotalTable';
 
@@ -27,6 +28,8 @@ export default function Budget({ session }) {
     const [isErrorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setMessage] = useState('');
 
+    const [isGreetingsVisible, setGreetingsVisible] = useState(true);
+
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
     const [isAddFactVisible, setAddFactVisible] = useState(false);
 
@@ -47,7 +50,8 @@ export default function Budget({ session }) {
     }, [session])
 
     useEffect(() => {
-        if (!data) return
+        if (data === undefined) return
+        if (data === []) setGreetingsVisible(true)
         const _fact = {
             labels: [],
             datasets: [{
@@ -163,8 +167,21 @@ export default function Budget({ session }) {
         setAddFactVisible(false)
     }
 
+    const closeGreetingHandler = () => setGreetingsVisible(false)
+
     return (
         <Container gap={4} justify="flex-start">
+            <InformationModal
+                isVisible={isGreetingsVisible}
+                closeHandler={closeGreetingHandler}
+                headline="🌟 Greetings! 🌟"
+            >
+                <Text>First time here? So... Let`s start planing.</Text>
+                <Text>To create a new planed spending, press a button "Add planed spending" in top-right corner.</Text>
+                <Spacer y={0.3} />
+                <Text>Want more information?</Text>
+                <Link href='https://youtu.be/jV9uXh_1Pso'>Watch the guid on YouTube </Link>
+            </InformationModal>
             <AddRecordModal
                 isVisible={isAddPlanVisible}
                 closeHandler={closeAddPlanHandler}
@@ -205,12 +222,12 @@ export default function Budget({ session }) {
                 <Spacer x={1} />
             </Row>
             <Spacer y={1} />
-            <Row gap={1}><Col><TotalTable data={dataLoading?[]:data} rowsPerPage={6} /></Col></Row>
+            <Row gap={1}><Col><TotalTable data={dataLoading ? [] : data} rowsPerPage={6} /></Col></Row>
 
             <Spacer y={1} />
             <Row gap={1}>
-                <Col><SpendingTable data={planedLoading?[]:planTable} rowsPerPage={10} /></Col>
-                <Col><SpendingTable data={factsLoading?[]:factTable} rowsPerPage={10} /></Col>
+                <Col><SpendingTable data={planedLoading ? [] : planTable} rowsPerPage={10} /></Col>
+                <Col><SpendingTable data={factsLoading ? [] : factTable} rowsPerPage={10} /></Col>
             </Row>
         </Container>)
 }

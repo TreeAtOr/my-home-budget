@@ -3,7 +3,7 @@ import { Bar } from 'react-chartjs-2';
 
 export default function BarDiagram({ data, title }) {
     return (
-        <Card css={{ mw: "925px" }}>
+        <Card css={{ mw: "925px", mh:"493px" }}>
             <Card.Header>
                 <Row justify='center'>
                     <Text size={16} b color='grey'>{title}</Text>
