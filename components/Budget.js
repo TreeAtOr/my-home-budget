@@ -176,8 +176,8 @@ export default function Budget({ session }) {
                 closeHandler={closeGreetingHandler}
                 headline="🌟 Greetings! 🌟"
             >
-                <Text>First time here? So... Let`s start planing.</Text>
-                <Text>To create a new planed spending, press a button "Add planed spending" in top-right corner.</Text>
+                <Text>{"First time here? So... Let`s start planing."}</Text>
+                <Text>{'To create a new planed spending, press a button "Add planed spending" in top-right corner.'}</Text>
                 <Spacer y={0.3} />
                 <Text>Want more information?</Text>
                 <Link href='https://youtu.be/jV9uXh_1Pso'>Watch the guid on YouTube </Link>
