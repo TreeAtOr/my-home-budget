@@ -4,6 +4,8 @@ import { ErrorModal } from './modals/ErrorModal';
 import { Container, Text, Input, Button, Spacer, Row, Col } from "@nextui-org/react";
 
 import { MagicLinkModal } from './modals/MagicLinkModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
@@ -19,6 +21,19 @@ export default function Auth() {
       const { error } = await supabase.auth.signIn({ email })
       if (error) throw error
       setAlertVisible(true)
+    } catch (error) {
+      setMessage(error.error_description || error.message)
+      setErrorVisible(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleOAuth = async (provider) => {
+    try {
+      setLoading(true)
+      const { error } = await supabase.auth.signIn({ provider })
+      if (error) throw error
     } catch (error) {
       setMessage(error.error_description || error.message)
       setErrorVisible(true)
@@ -50,8 +65,7 @@ export default function Auth() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-
-        <Spacer y={0.5} />
+        <Spacer x={1} />
         <Button
           onClick={(e) => {
             e.preventDefault()
@@ -63,6 +77,13 @@ export default function Auth() {
           <span>{loading ? 'Loading' : 'Send magic link'}</span>
         </Button>
       </Row>
+      <Spacer y={0.5} />
+      <Row justify="center"><Text size={18} color="gray">OR</Text></Row>
+      <Spacer y={0.5} />
+      <Row justify="center"><Button color="primary" onClick={(e) => {
+            e.preventDefault()
+            handleOAuth("google")
+          }}  disabled={loading}>Sign with Google<Spacer y={0.5} /><FontAwesomeIcon icon={faGoogle}/></Button></Row>
     </Container>
   )
 }

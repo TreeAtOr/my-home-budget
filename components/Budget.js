@@ -1,50 +1,13 @@
-import { Text, Table, Container, Grid, Row, Col, Spacer } from '@nextui-org/react';
+import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card } from '@nextui-org/react';
 import { useState, useEffect, useMemo } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import BarDiagram from './diagrams/BarDiagram';
-import DonutDiagram from './diagrams/DonutDiagram'
+import DonutDiagram from './diagrams/DonutDiagram';
+import { AddRecordModal } from './modals/AddRecordModal';
+import { ErrorModal } from './modals/ErrorModal';
 import { SpendingTable } from './tables/SpendingTable';
 import { TotalTable } from './tables/TotalTable';
 
-const data = {
-    labels: [
-        'Red',
-        'Green',
-        'Yellow'
-    ],
-    legend: {
-        display: true,
-    },
-
-    datasets: [{
-        data: [300, 50, 100],
-        backgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56'
-        ],
-        hoverBackgroundColor: [
-            '#FF6384',
-            '#36A2EB',
-            '#FFCE56'
-        ]
-    }]
-};
-
-const columns = [
-    {
-        key: "kind",
-        label: "LABELS",
-    },
-    {
-        key: "plan",
-        label: "PLAN",
-    },
-    {
-        key: "fact",
-        label: "FACT",
-    },
-];
 const colors = ['#17143c', '#12435e', '#0e7280', '#09a1a2', '#05d0c4', '#00ffe6', '#30ffb8', '#60ff8a', '#90ff5c', '#bfff2e', '#f2e1ef', '#f5cade', '#f8b3ce', '#fc9dbe', '#ff86ae', '#e96b96', '#d4507f', '#be3668', '#a91b51', '#93003a']
 function getColorByName(name) {
     let hash = 0;
@@ -56,12 +19,17 @@ function getColorByName(name) {
     return colors[Math.abs(hash) % colors.length]
 }
 
-
-
-
-
 export default function Budget({ session }) {
-    const [loading, setLoading] = useState(true)
+    const [dataLoading, setDataLoading] = useState(true)
+    const [planedLoading, setPlanedLoading] = useState(true)
+    const [factsLoading, setFactsLoading] = useState(true)
+
+    const [isErrorVisible, setErrorVisible] = useState(false);
+    const [errorMessage, setMessage] = useState('');
+
+    const [isAddPlanVisible, setAddPlanVisible] = useState(false);
+    const [isAddFactVisible, setAddFactVisible] = useState(false);
+
     const [data, setData] = useState()
     const [factDiagram, setFactDiagram] = useState()
     const [planDiagram, setPlanDiagram] = useState()
@@ -70,7 +38,7 @@ export default function Budget({ session }) {
     const [planTable, setPlanTable] = useState([])
     const [factTable, setFactTable] = useState([])
 
-
+    const errorCloseHandler = () => setErrorVisible(false)
 
     useEffect(() => {
         getData()
@@ -118,78 +86,131 @@ export default function Budget({ session }) {
     }, [data])
     async function getPlaned() {
         try {
-            setLoading(true)
+            setPlanedLoading(true)
             let { data, error, status } = await supabase
                 .from('plan')
                 .select(`id,label,amount,created_at,kind`)
-            if (error && status !== 406) {
-                throw error
-            }
-
+            if (error && status !== 406) throw error
             if (data) setPlanTable(data)
-
         } catch (error) {
-            alert(error.message)
+            setMessage(error.error_description || error.message)
+            setErrorVisible(true)
         } finally {
-            setLoading(false)
+            setPlanedLoading(false)
         }
     }
 
     async function getFacts() {
         try {
-            setLoading(true)
+            setFactsLoading(true)
             let { data, error, status } = await supabase
                 .from('fact')
                 .select(`id,label,amount,created_at,kind`)
-            if (error && status !== 406) {
-                throw error
-            }
+            if (error && status !== 406) throw error
             if (data) setFactTable(data)
-
         } catch (error) {
-            alert(error.message)
+            setMessage(error.error_description || error.message)
+            setErrorVisible(true)
         } finally {
-            setLoading(false)
+            setFactsLoading(false)
         }
     }
 
     async function getData() {
         try {
-            setLoading(true)
+            setDataLoading(true)
             let { data, error, status } = await supabase
                 .from('total')
                 .select(`kind, plan,fact,percentage`)
-            if (error && status !== 406) {
-                throw error
-            }
-
+            if (error && status !== 406) throw error
             if (data) setData(data)
-
         } catch (error) {
             alert(error.message)
         } finally {
-            setLoading(false)
+            setDataLoading(false)
         }
-
     }
+
+    async function addRecord(dest, label, amount, kind) {
+        try {
+            setFactsLoading(true)
+            let { data, error, status } = await supabase
+                .from(dest).insert([{ label, amount, kind }])
+            if (error && status !== 406) throw error
+            getData()
+            getPlaned()
+            getFacts()
+        } catch (error) {
+            setMessage(error.error_description || error.message)
+            setErrorVisible(true)
+        } finally {
+            setFactsLoading(false)
+        }
+    }
+
+    const openAddPlanHandler = () => setAddPlanVisible(true)
+    const openAddFactHandler = () => setAddFactVisible(true)
+
+    const closeAddPlanHandler = () => setAddPlanVisible(false)
+    const closeAddFactHandler = () => setAddFactVisible(false)
+
+    const submitAddPlanHandler = (label, amount, kind) => {
+        addRecord("plan", label, amount, kind)
+        setAddPlanVisible(false)
+    }
+    const submitAddFactHandler = (label, amount, kind) => {
+        addRecord("fact", label, amount, kind)
+        setAddFactVisible(false)
+    }
+
     return (
         <Container gap={4} justify="flex-start">
+            <AddRecordModal
+                isVisible={isAddPlanVisible}
+                closeHandler={closeAddPlanHandler}
+                submitHandler={submitAddPlanHandler} />
+
+            <AddRecordModal
+                isVisible={isAddFactVisible}
+                closeHandler={closeAddFactHandler}
+                submitHandler={submitAddFactHandler} />
+            <ErrorModal
+                closeHandler={errorCloseHandler}
+                isVisible={isErrorVisible}
+                message={errorMessage} />
+            <Row gap={2}>
+                <Card color='primary'>
+                    <Card.Body>
+                        <Row justify='space-between'>
+                            <Spacer x={1} />
+                            <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
+                            <Button onClick={openAddPlanHandler} color='gradient'>Add planing spending</Button>
+                            <Spacer x={1} />
+                            <Button onClick={openAddFactHandler} color='primary'>Add fact spending</Button>
+                        </Row>
+
+                    </Card.Body>
+                </Card>
+                <Spacer x={1} />
+
+            </Row>
+            <Spacer y={1} />
+
             <Row justify="space-around" gap={2}>
                 <DonutDiagram data={factDiagram} title="FACT SPENDING" />
                 <Spacer x={2} />
                 <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
                 <Spacer x={2} />
-                <BarDiagram data={composedDiagram} title="COMPERING"  />
+                <BarDiagram data={composedDiagram} title="COMPERING" />
                 <Spacer x={1} />
             </Row>
             <Spacer y={1} />
-            <Row gap={1}><Col><TotalTable data={data} rowsPerPage={6} /></Col></Row>
+            <Row gap={1}><Col><TotalTable data={dataLoading?[]:data} rowsPerPage={6} /></Col></Row>
 
             <Spacer y={1} />
             <Row gap={1}>
-                <Col><SpendingTable data={planTable} rowsPerPage={10} /></Col>
-                <Col><SpendingTable data={factTable} rowsPerPage={10} /></Col>
+                <Col><SpendingTable data={planedLoading?[]:planTable} rowsPerPage={10} /></Col>
+                <Col><SpendingTable data={factsLoading?[]:factTable} rowsPerPage={10} /></Col>
             </Row>
         </Container>)
-
 }

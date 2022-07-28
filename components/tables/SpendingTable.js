@@ -1,4 +1,4 @@
-import {Table, Text} from "@nextui-org/react"
+import {Button, Table, Text} from "@nextui-org/react"
 
 export function SpendingTable({ data,rowsPerPage }) {
     return (<Table
