@@ -1,5 +1,5 @@
+import { Modal, Button, Text, Input, Row, Checkbox, Spacer } from "@nextui-org/react";
 
-import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
 export function MagicLinkModal({ isVisible, closeHandler }) {
     return (<Modal
         closeButton
@@ -9,7 +9,7 @@ export function MagicLinkModal({ isVisible, closeHandler }) {
     >
         <Modal.Header>
             <Text id="modal-title" size={18}>
-                You looks 
+                {"Today you looks "}
                 <Text b size={18}>
                     awesome
                 </Text>
