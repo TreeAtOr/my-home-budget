@@ -1,5 +1,11 @@
 import '../styles/globals.css'
-import { NextUIProvider,createTheme } from '@nextui-org/react';
+import { NextUIProvider, createTheme } from '@nextui-org/react';
+
+import { Chart, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js'
+Chart.register(BarElement)
+Chart.register(ArcElement);
+Chart.register(CategoryScale);
+Chart.register(LinearScale);
 
 const theme = createTheme({
   type: "dark", // it could be "light" or "dark"
@@ -32,7 +38,7 @@ const theme = createTheme({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <NextUIProvider theme={theme}>
+    <NextUIProvider>
       <Component {...pageProps} />
     </NextUIProvider>
   )
