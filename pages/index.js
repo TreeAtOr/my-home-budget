@@ -16,7 +16,7 @@ export default function Home() {
   }, [])
 
   return (
-    <Container fluid alignItems='center' justify='center' className="container" style={{ padding: '50px 0 100px 0' }}>
+    <Container fluid alignItems='center' justify='center' className="container" style={{ padding: '0 0 0 0' }}>
       {!session ? <Auth /> : <Budget key={session.user.id} session={session} />}
 
       <Spacer y={3} />

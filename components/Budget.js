@@ -1,5 +1,6 @@
 import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card, Link } from '@nextui-org/react';
 import { useState, useEffect, useMemo } from 'react'
+import useAdaptivity from '../utils/hooks/useAdaptivity';
 import { supabase } from '../utils/supabaseClient'
 import BarDiagram from './diagrams/BarDiagram';
 import DonutDiagram from './diagrams/DonutDiagram';
@@ -41,7 +42,10 @@ export default function Budget({ session }) {
     const [planTable, setPlanTable] = useState([])
     const [factTable, setFactTable] = useState([])
 
+    const size = useAdaptivity()
+
     const errorCloseHandler = () => setErrorVisible(false)
+
 
     useEffect(() => {
         getData()
@@ -170,7 +174,7 @@ export default function Budget({ session }) {
     const closeGreetingHandler = () => setGreetingsVisible(false)
 
     return (
-        <Container gap={4} justify="flex-start">
+        <Container gap={size == 'xs' ? 0 : 4} justify="flex-start">
             <InformationModal
                 isVisible={isGreetingsVisible}
                 closeHandler={closeGreetingHandler}
@@ -195,39 +199,51 @@ export default function Budget({ session }) {
                 closeHandler={errorCloseHandler}
                 isVisible={isErrorVisible}
                 message={errorMessage} />
-            <Row gap={2}>
-                <Card color='primary'>
-                    <Card.Body>
-                        <Row justify='space-between'>
-                            <Spacer x={1} />
-                            <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
-                            <Button onClick={openAddPlanHandler} color='gradient'>Add planing spending</Button>
-                            <Spacer x={1} />
-                            <Button onClick={openAddFactHandler} color='primary'>Add fact spending</Button>
-                        </Row>
+            <Grid.Container gap={1}>
+            <Grid md={12} xs={12}>
+                    <Card color='primary'>
+                        <Card.Body>
+                            {size == 'xs' ?
+                                <Row justify='space-between'>
+                                    <Button onClick={openAddPlanHandler} color='gradient' auto>+ Plan</Button>
+                                    <Spacer x={1} />
+                                    <Button onClick={openAddFactHandler} color='primary' auto>+ Fact</Button>
+                                </Row>
+                                :
+                                <Row justify='space-between'>
+                                    <Spacer x={1} />
+                                    <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
+                                    <Button onClick={openAddPlanHandler} color='gradient' auto>Add planing spending</Button>
+                                    <Spacer x={1} />
+                                    <Button onClick={openAddFactHandler} color='primary' auto>Add fact spending</Button>
+                                </Row>}
+                        </Card.Body>
+                    </Card>
+                </Grid>
 
-                    </Card.Body>
-                </Card>
-                <Spacer x={1} />
+                <Grid md={3} xs={6}>
+                    <DonutDiagram data={factDiagram} title="FACT SPENDING" />
+                </Grid>
+                <Grid md={3} xs={6}>
+                    <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
+                </Grid>
+                <Grid md={6} xs={12}>
+                    <BarDiagram data={composedDiagram} title="COMPERING" />
+                </Grid>
 
-            </Row>
-            <Spacer y={1} />
+                <Grid md={12} xs={12}>
+                    <Col>
+                        <TotalTable data={dataLoading ? [] : data} rowsPerPage={6} />
+                    </Col>
+                </Grid>
 
-            <Row justify="space-around" gap={2}>
-                <DonutDiagram data={factDiagram} title="FACT SPENDING" />
-                <Spacer x={2} />
-                <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
-                <Spacer x={2} />
-                <BarDiagram data={composedDiagram} title="COMPERING" />
-                <Spacer x={1} />
-            </Row>
-            <Spacer y={1} />
-            <Row gap={1}><Col><TotalTable data={dataLoading ? [] : data} rowsPerPage={6} /></Col></Row>
+                <Grid md={6} xs={12}>
+                    <Col><SpendingTable data={planedLoading ? [] : planTable} rowsPerPage={10} size={size}  /></Col>
+                </Grid>
+                <Grid md={6} xs={12}>
+                    <Col><SpendingTable data={factsLoading ? [] : factTable} rowsPerPage={10} size={size} /></Col>
+                </Grid>
+            </Grid.Container>
 
-            <Spacer y={1} />
-            <Row gap={1}>
-                <Col><SpendingTable data={planedLoading ? [] : planTable} rowsPerPage={10} /></Col>
-                <Col><SpendingTable data={factsLoading ? [] : factTable} rowsPerPage={10} /></Col>
-            </Row>
         </Container>)
 }
