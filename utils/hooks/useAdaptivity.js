@@ -8,14 +8,15 @@ function widthToBreakpoints(width) {
     return 'xl';
 }
 
+
 export default function useAdaptivity() {
     const [status, setStatus] = useState(widthToBreakpoints(window.innerWidth));
     useEffect(() => {
-        const handleResizeWindow = () => setStatus(widthToBreakpoints(window.innerWidth));
-        window.addEventListener("resize", handleResizeWindow);
-        return () => {
-            window.removeEventListener("resize", handleResizeWindow);
-        };
+            const handleResizeWindow = () => setStatus(widthToBreakpoints(window.innerWidth));
+            window.addEventListener("resize", handleResizeWindow);
+            return () => {
+                window.removeEventListener("resize", handleResizeWindow);
+            };        
     }, [])
     return status
 }

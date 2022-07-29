@@ -1,6 +1,5 @@
 import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card, Link } from '@nextui-org/react';
 import { useState, useEffect, useMemo } from 'react'
-import useAdaptivity from '../utils/hooks/useAdaptivity';
 import { supabase } from '../utils/supabaseClient'
 import BarDiagram from './diagrams/BarDiagram';
 import DonutDiagram from './diagrams/DonutDiagram';
@@ -9,6 +8,8 @@ import { ErrorModal } from './modals/ErrorModal';
 import { InformationModal } from './modals/InformationModal';
 import { SpendingTable } from './tables/SpendingTable';
 import { TotalTable } from './tables/TotalTable';
+import useAdaptivity from '../utils/hooks/useAdaptivity';
+import Footer from '../components/ui/Footer'
 
 const colors = ['#17143c', '#12435e', '#0e7280', '#09a1a2', '#05d0c4', '#00ffe6', '#30ffb8', '#60ff8a', '#90ff5c', '#bfff2e', '#f2e1ef', '#f5cade', '#f8b3ce', '#fc9dbe', '#ff86ae', '#e96b96', '#d4507f', '#be3668', '#a91b51', '#93003a']
 function getColorByName(name) {
@@ -21,7 +22,7 @@ function getColorByName(name) {
     return colors[Math.abs(hash) % colors.length]
 }
 
-export default function Budget({ session }) {
+export default function Budget({ session, logout }) {
     const [dataLoading, setDataLoading] = useState(true)
     const [planedLoading, setPlanedLoading] = useState(true)
     const [factsLoading, setFactsLoading] = useState(true)
@@ -42,9 +43,16 @@ export default function Budget({ session }) {
     const [planTable, setPlanTable] = useState([])
     const [factTable, setFactTable] = useState([])
 
+    const [mode, setMode] = useState('desktop') //'mfact' 'mplan', 'mdiagrams'
+
     const size = useAdaptivity()
+    useEffect(() => {
+        if (size == 'xs' && mode == 'desktop') setMode('mdiagrams')
+        else if (size != 'xs' && mode != 'desktop') setMode('desktop')
+    }, [size])
 
     const errorCloseHandler = () => setErrorVisible(false)
+
 
 
     useEffect(() => {
@@ -199,15 +207,17 @@ export default function Budget({ session }) {
                 closeHandler={errorCloseHandler}
                 isVisible={isErrorVisible}
                 message={errorMessage} />
-            <Grid.Container gap={1}>
-            <Grid md={12} xs={12}>
+            <Spacer y={1} />
+            <Grid.Container gap={0.7}>
+
+                <Grid md={12} xs={12}>
                     <Card color='primary'>
                         <Card.Body>
-                            {size == 'xs' ?
+                            {mode != 'desktop' ?
                                 <Row justify='space-between'>
-                                    <Button onClick={openAddPlanHandler} color='gradient' auto>+ Plan</Button>
-                                    <Spacer x={1} />
-                                    <Button onClick={openAddFactHandler} color='primary' auto>+ Fact</Button>
+                                    <Button onClick={() => setMode('mplan')} color='gradient' auto>Plan</Button>
+                                    <Button onClick={() => setMode('mdiagrams')} color='gradient' auto>Total</Button>
+                                    <Button onClick={() => setMode('mfact')} color='primary' auto>Fact</Button>
                                 </Row>
                                 :
                                 <Row justify='space-between'>
@@ -220,29 +230,60 @@ export default function Budget({ session }) {
                         </Card.Body>
                     </Card>
                 </Grid>
+                {mode == 'desktop' || mode == 'mdiagrams' ? <>
+                    <Grid md={3} xs={6}>
+                        <DonutDiagram data={factDiagram} title="FACT SPENDING" />
+                    </Grid>
+                    <Grid md={3} xs={6}>
+                        <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
+                    </Grid>
+                    <Grid md={6} xs={12}>
+                        <BarDiagram data={composedDiagram} title="COMPARING" />
+                    </Grid>
+                    <Grid md={12} xs={12}>
+                        <Col>
+                            <TotalTable data={dataLoading ? [] : data} rowsPerPage={mode == 'desktop' ? 6 : 2} />
+                        </Col>
+                    </Grid>
+                </> : <></>}
 
-                <Grid md={3} xs={6}>
-                    <DonutDiagram data={factDiagram} title="FACT SPENDING" />
-                </Grid>
-                <Grid md={3} xs={6}>
-                    <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
-                </Grid>
-                <Grid md={6} xs={12}>
-                    <BarDiagram data={composedDiagram} title="COMPERING" />
-                </Grid>
+                {mode == 'mplan' ? <Grid xs={12}>
+                    <Button
+                        css={{ width: '100%' }}
+                        onClick={openAddPlanHandler}
+                        color='gradient'
+                        auto>
+                        Add planing spending
+                    </Button>
+                </Grid> : <></>}
 
-                <Grid md={12} xs={12}>
-                    <Col>
-                        <TotalTable data={dataLoading ? [] : data} rowsPerPage={6} />
-                    </Col>
-                </Grid>
+                {mode == 'mfact' ? <Grid xs={12}>
+                    <Button
+                        css={{ width: '100%' }}
+                        onClick={openAddPlanHandler}
+                        color='gradient'
+                        auto>
+                        Add fact spending
+                    </Button>
+                </Grid> : <></>}
 
-                <Grid md={6} xs={12}>
-                    <Col><SpendingTable data={planedLoading ? [] : planTable} rowsPerPage={10} size={size}  /></Col>
-                </Grid>
-                <Grid md={6} xs={12}>
-                    <Col><SpendingTable data={factsLoading ? [] : factTable} rowsPerPage={10} size={size} /></Col>
-                </Grid>
+                {mode == 'desktop' || mode == 'mplan' ?
+                    <Grid md={6} xs={12}>
+                        <Col><SpendingTable
+                            data={planedLoading ? [] : planTable}
+                            rowsPerPage={mode == 'desktop' ? 10 : 12}
+                            size={size} /></Col>
+                    </Grid> : <></>
+                }
+                {mode == 'desktop' || mode == 'mfact' ?
+                    <Grid md={6} xs={12}>
+                        <Col><SpendingTable
+                            data={factsLoading ? [] : factTable}
+                            rowsPerPage={mode == 'desktop' ? 10 : 12}
+                            size={size} /></Col>
+                    </Grid> : <></>
+                }
+                {mode == 'desktop' ? <Grid md={12} xs={12}><Footer logout={logout} /></Grid> : <></>}
             </Grid.Container>
 
         </Container>)

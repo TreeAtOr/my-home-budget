@@ -38,9 +38,9 @@ const theme = createTheme({
 
 function MyApp({ Component, pageProps }) {
   return (
-    <NextUIProvider>
-      <Component {...pageProps} />
-    </NextUIProvider>
+      <NextUIProvider>
+        <Component {...pageProps} />
+      </NextUIProvider>
   )
 }
 
