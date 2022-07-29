@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import { NextUIProvider, createTheme } from '@nextui-org/react';
 
 import { Chart, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js'
+import Head from 'next/head';
 Chart.register(BarElement)
 Chart.register(ArcElement);
 Chart.register(CategoryScale);
@@ -37,11 +38,17 @@ const theme = createTheme({
 })
 
 function MyApp({ Component, pageProps }) {
-  return (
-      <NextUIProvider>
-        <Component {...pageProps} />
-      </NextUIProvider>
-  )
+  return (<>
+    <Head>
+      <title>MHB - My Home Budget </title>
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    </Head>
+
+    <NextUIProvider>
+      <Component {...pageProps} />
+    </NextUIProvider>
+  </>)
 }
 
 export default MyApp
