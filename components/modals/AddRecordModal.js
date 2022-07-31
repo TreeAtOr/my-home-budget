@@ -4,6 +4,7 @@ import { useState } from "react";
 export function AddRecordModal({ isVisible, closeHandler, submitHandler }) {
     const [label, setLabel] = useState()
     const [amount, setAmount] = useState()
+    const [date, setDate] = useState(new Date())
     const [kind, setKind] = useState()
 
     const addRecordHandler = () => submitHandler(label, amount, kind)
@@ -36,6 +37,12 @@ export function AddRecordModal({ isVisible, closeHandler, submitHandler }) {
                 onChange={(e) => setKind(e.target.value)}
                 clearable
                 labelPlaceholder="Kind" />
+            <Spacer y={0.1} />
+            <Input
+                type={"date"}
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                label="Date(optional)" />
         </Modal.Body>
         <Modal.Footer>
             <Button auto flat disabled={!(label && amount)} color="primary" onClick={addRecordHandler}>

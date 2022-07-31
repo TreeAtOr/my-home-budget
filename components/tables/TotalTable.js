@@ -22,11 +22,11 @@ export function TotalTable({ data,rowsPerPage  }) {
         </Table.Header>
         <Table.Body items={data}>
             {(item) => (
-                <Table.Row key={item.kind}>
-                    <Table.Cell>{item.kind}</Table.Cell>
-                    <Table.Cell>{item.plan}</Table.Cell>
-                    <Table.Cell>{item.fact}</Table.Cell>
-                    <Table.Cell>{renderPercentage(item.percentage)}</Table.Cell>
+                <Table.Row key={item.total_kind}>
+                    <Table.Cell>{item.total_kind}</Table.Cell>
+                    <Table.Cell>{item.total_plan}</Table.Cell>
+                    <Table.Cell>{item.total_fact}</Table.Cell>
+                    <Table.Cell>{renderPercentage(item.total_percentage)}</Table.Cell>
                 </Table.Row>
             )}
         </Table.Body>

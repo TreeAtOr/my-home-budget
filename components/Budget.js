@@ -10,6 +10,7 @@ import { SpendingTable } from './tables/SpendingTable';
 import { TotalTable } from './tables/TotalTable';
 import useAdaptivity from '../utils/hooks/useAdaptivity';
 import Footer from '../components/ui/Footer'
+import { SelectPeriodModal } from './modals/SelectPeriodModal';
 
 const colors = ['#17143c', '#12435e', '#0e7280', '#09a1a2', '#05d0c4', '#00ffe6', '#30ffb8', '#60ff8a', '#90ff5c', '#bfff2e', '#f2e1ef', '#f5cade', '#f8b3ce', '#fc9dbe', '#ff86ae', '#e96b96', '#d4507f', '#be3668', '#a91b51', '#93003a']
 function getColorByName(name) {
@@ -35,6 +36,9 @@ export default function Budget({ session, logout }) {
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
     const [isAddFactVisible, setAddFactVisible] = useState(false);
 
+    const [isPeriodPickerVisible, setPeriodPickerVisible] = useState(false);
+
+
     const [data, setData] = useState()
     const [factDiagram, setFactDiagram] = useState()
     const [planDiagram, setPlanDiagram] = useState()
@@ -42,6 +46,8 @@ export default function Budget({ session, logout }) {
 
     const [planTable, setPlanTable] = useState([])
     const [factTable, setFactTable] = useState([])
+
+    const [period, setPeriod] = useState([new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())])
 
     const [mode, setMode] = useState('desktop') //'mfact' 'mplan', 'mdiagrams'
 
@@ -59,7 +65,7 @@ export default function Budget({ session, logout }) {
         getData()
         getPlaned()
         getFacts()
-    }, [session])
+    }, [session, period])
 
     useEffect(() => {
         if (data === undefined) return
@@ -82,15 +88,15 @@ export default function Budget({ session, logout }) {
         }
 
         for (let i of data) {
-            _fact.labels.push(i.kind)
-            _fact.datasets[0].data.push(i.fact)
-            _fact.datasets[0].backgroundColor.push(getColorByName(i.kind))
-            _fact.datasets[0].hoverBackgroundColor.push(getColorByName(i.kind))
+            _fact.labels.push(i.total_kind)
+            _fact.datasets[0].data.push(i.total_fact)
+            _fact.datasets[0].backgroundColor.push(getColorByName(i.total_kind))
+            _fact.datasets[0].hoverBackgroundColor.push(getColorByName(i.total_kind))
 
-            _plan.labels.push(i.kind)
-            _plan.datasets[0].data.push(i.plan)
-            _plan.datasets[0].backgroundColor.push(getColorByName(i.kind))
-            _plan.datasets[0].hoverBackgroundColor.push(getColorByName(i.kind))
+            _plan.labels.push(i.total_kind)
+            _plan.datasets[0].data.push(i.total_plan)
+            _plan.datasets[0].backgroundColor.push(getColorByName(i.total_kind))
+            _plan.datasets[0].hoverBackgroundColor.push(getColorByName(i.total_kind))
         }
 
         setFactDiagram(_fact)
@@ -106,6 +112,8 @@ export default function Budget({ session, logout }) {
             let { data, error, status } = await supabase
                 .from('plan')
                 .select(`id,label,amount,created_at,kind`)
+                .gte('created_at', period[0].toISOString())
+                .lte('created_at', period[1].toISOString())
             if (error && status !== 406) throw error
             if (data) setPlanTable(data)
         } catch (error) {
@@ -122,6 +130,8 @@ export default function Budget({ session, logout }) {
             let { data, error, status } = await supabase
                 .from('fact')
                 .select(`id,label,amount,created_at,kind`)
+                .gte('created_at', period[0].toISOString())
+                .lte('created_at', period[1].toISOString())
             if (error && status !== 406) throw error
             if (data) setFactTable(data)
         } catch (error) {
@@ -135,9 +145,10 @@ export default function Budget({ session, logout }) {
     async function getData() {
         try {
             setDataLoading(true)
-            let { data, error, status } = await supabase
-                .from('total')
-                .select(`kind, plan,fact,percentage`)
+            let { data, error, status } = await supabase.rpc('total_by_period', {
+                _to: period[1].toISOString(),
+                _from: period[0].toISOString()
+            })
             if (error && status !== 406) throw error
             if (data) setData(data)
         } catch (error) {
@@ -181,6 +192,13 @@ export default function Budget({ session, logout }) {
 
     const closeGreetingHandler = () => setGreetingsVisible(false)
 
+    const openPeriodPickerHandler = () => setPeriodPickerVisible(true)
+    const closePeriodPickerHandler = () => setPeriodPickerVisible(false)
+    const submitPeriodPickerHandler = (from, to) => {
+        setPeriod([from, to])
+        setPeriodPickerVisible(false)
+    }
+
     return (
         <Container gap={size == 'xs' ? 0 : 4} justify="flex-start">
             <InformationModal
@@ -207,6 +225,11 @@ export default function Budget({ session, logout }) {
                 closeHandler={errorCloseHandler}
                 isVisible={isErrorVisible}
                 message={errorMessage} />
+            <SelectPeriodModal
+                isVisible={isPeriodPickerVisible}
+                closeHandler={closePeriodPickerHandler}
+                submitHandler={submitPeriodPickerHandler}
+            />
             <Spacer y={1} />
             <Grid.Container gap={0.7}>
 
@@ -217,12 +240,17 @@ export default function Budget({ session, logout }) {
                                 <Row justify='space-between'>
                                     <Button onClick={() => setMode('mplan')} color='gradient' auto>Plan</Button>
                                     <Button onClick={() => setMode('mdiagrams')} color='gradient' auto>Total</Button>
-                                    <Button onClick={() => setMode('mfact')} color='primary' auto>Fact</Button>
+                                    <Button onClick={() => setMode('mfact')} color='gradient' auto>Fact</Button>
                                 </Row>
                                 :
                                 <Row justify='space-between'>
                                     <Spacer x={1} />
                                     <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
+                                    <Col>
+                                        <Button onClick={openPeriodPickerHandler} color='grey'>
+                                            {period[0].toDateString()}-{period[1].toDateString()}
+                                        </Button>
+                                    </Col>
                                     <Button onClick={openAddPlanHandler} color='gradient' auto>Add planing spending</Button>
                                     <Spacer x={1} />
                                     <Button onClick={openAddFactHandler} color='primary' auto>Add fact spending</Button>
@@ -230,19 +258,28 @@ export default function Budget({ session, logout }) {
                         </Card.Body>
                     </Card>
                 </Grid>
-                {mode == 'desktop' || mode == 'mdiagrams' ? <>
+                {mode == 'mdiagrams' ?<Grid xs={12}>
+                    <Button
+                        css={{ width: '100%' }}
+                        onClick={openPeriodPickerHandler}
+                        color='gradient'
+                        auto>
+                        {period[0].toDateString()}-{period[1].toDateString()}
+                    </Button></Grid> : <></>}
+                {mode == 'desktop' ? <>
                     <Grid md={3} xs={6}>
                         <DonutDiagram data={factDiagram} title="FACT SPENDING" />
                     </Grid>
                     <Grid md={3} xs={6}>
                         <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
-                    </Grid>
+                    </Grid></> : <></>}
+                {mode == 'desktop' || mode == 'mdiagrams' ? <>
                     <Grid md={6} xs={12}>
                         <BarDiagram data={composedDiagram} title="COMPARING" />
                     </Grid>
                     <Grid md={12} xs={12}>
                         <Col>
-                            <TotalTable data={dataLoading ? [] : data} rowsPerPage={mode == 'desktop' ? 6 : 2} />
+                            <TotalTable data={dataLoading ? [] : data} rowsPerPage={mode == 'desktop' ? 6 : 5} />
                         </Col>
                     </Grid>
                 </> : <></>}
@@ -271,7 +308,7 @@ export default function Budget({ session, logout }) {
                     <Grid md={6} xs={12}>
                         <Col><SpendingTable
                             data={planedLoading ? [] : planTable}
-                            rowsPerPage={mode == 'desktop' ? 10 : 12}
+                            rowsPerPage={mode == 'desktop' ? 10 : 11}
                             size={size} /></Col>
                     </Grid> : <></>
                 }
@@ -279,7 +316,7 @@ export default function Budget({ session, logout }) {
                     <Grid md={6} xs={12}>
                         <Col><SpendingTable
                             data={factsLoading ? [] : factTable}
-                            rowsPerPage={mode == 'desktop' ? 10 : 12}
+                            rowsPerPage={mode == 'desktop' ? 10 : 11}
                             size={size} /></Col>
                     </Grid> : <></>
                 }
