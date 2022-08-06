@@ -11,6 +11,7 @@ import { TotalTable } from './tables/TotalTable';
 import useAdaptivity from '../utils/hooks/useAdaptivity';
 import Footer from '../components/ui/Footer'
 import { SelectPeriodModal } from './modals/SelectPeriodModal';
+import { useLocalStorage } from '../utils/hooks/useLocalStorage';
 
 const colors = ['#17143c', '#12435e', '#0e7280', '#09a1a2', '#05d0c4', '#00ffe6', '#30ffb8', '#60ff8a', '#90ff5c', '#bfff2e', '#f2e1ef', '#f5cade', '#f8b3ce', '#fc9dbe', '#ff86ae', '#e96b96', '#d4507f', '#be3668', '#a91b51', '#93003a']
 function getColorByName(name) {
@@ -31,7 +32,7 @@ export default function Budget({ session, logout }) {
     const [isErrorVisible, setErrorVisible] = useState(false);
     const [errorMessage, setMessage] = useState('');
 
-    const [isGreetingsVisible, setGreetingsVisible] = useState(true);
+    const [isGreetingsVisible, setGreetingsVisible] = useLocalStorage('is-new',true);
 
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
     const [isAddFactVisible, setAddFactVisible] = useState(false);
@@ -230,7 +231,7 @@ export default function Budget({ session, logout }) {
                 closeHandler={closePeriodPickerHandler}
                 submitHandler={submitPeriodPickerHandler}
             />
-            <Spacer y={1} />
+            <Spacer y={mode == 'desktop'?1:0} />
             <Grid.Container gap={0.7}>
 
                 <Grid md={12} xs={12}>
@@ -297,7 +298,7 @@ export default function Budget({ session, logout }) {
                 {mode == 'mfact' ? <Grid xs={12}>
                     <Button
                         css={{ width: '100%' }}
-                        onClick={openAddPlanHandler}
+                        onClick={openAddFactHandler}
                         color='gradient'
                         auto>
                         Add fact spending
