@@ -7,7 +7,12 @@ export function AddRecordModal({ isVisible, closeHandler, submitHandler }) {
     const [date, setDate] = useState(new Date())
     const [kind, setKind] = useState()
 
-    const addRecordHandler = () => submitHandler(label, amount, kind)
+    const addRecordHandler = () => {
+        submitHandler(label, amount, kind)
+        setLabel("")
+        setAmount()
+        setKind("")
+    }
     return (<Modal
         closeButton
         aria-labelledby="modal-title"
