@@ -1,6 +1,6 @@
 import { Modal, Button, Text, Input, Row, Checkbox, Spacer } from "@nextui-org/react";
 
-export function InformationModal({ isVisible, closeHandler, headline, children }) {
+export function InformationModal({ isVisible, closeHandler, headline , children }) {
     return (<Modal
         closeButton
         aria-labelledby="modal-title"

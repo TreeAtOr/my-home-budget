@@ -1,11 +1,19 @@
 import { Modal, Button, Text, Input, Grid, Checkbox, Spacer } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export function AddRecordModal({ isVisible, closeHandler, submitHandler }) {
-    const [label, setLabel] = useState()
-    const [amount, setAmount] = useState()
-    const [date, setDate] = useState(new Date())
-    const [kind, setKind] = useState()
+export function AddRecordModal({ state,isVisible, closeHandler, submitHandler }) {
+    const [label, setLabel] = useState(state?state.label:"")
+    const [amount, setAmount] = useState(state?state.amount:0)
+    const [date, setDate] = useState(state?state.date:new Date())
+    const [kind, setKind] = useState(state?state.kind:"")
+
+    useEffect(() => {
+        if(!state) return
+        setLabel(state.label)
+        setAmount(state.amount)
+        setDate(state.date)
+        setKind(state.kind)
+    },[state])
 
     const addRecordHandler = () => {
         submitHandler(label, amount, kind)
