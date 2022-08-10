@@ -1,12 +1,14 @@
 import { Button, Card, Col, Grid, Link, Row, Spacer, Text } from "@nextui-org/react";
+import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useLocalStorage } from "../utils/hooks/useLocalStorage";
 import { AddRecordModal } from "./modals/AddRecordModal";
 import { ErrorModal } from "./modals/ErrorModal";
 import { InformationModal } from "./modals/InformationModal";
 import { SelectPeriodModal } from "./modals/SelectPeriodModal";
+import { recordsStore } from '../store/RecordsStore';
 
-export default function BudgetHeader({ addPlan, addFact, setPeriod,period, setMode, mode }) {
+export default observer(function BudgetHeader({ setMode, mode }) {
     const [isGreetingsVisible, setGreetingsVisible] = useLocalStorage('is-new', true);
 
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
@@ -14,17 +16,17 @@ export default function BudgetHeader({ addPlan, addFact, setPeriod,period, setMo
 
     const [isPeriodPickerVisible, setPeriodPickerVisible] = useState(false);
 
-    const submitAddPlanHandler = (label, amount, kind) => {
-        addPlan(label, amount, kind)
+    const submitAddPlanHandler = (item) => {
+        recordsStore.createRecord("plan", item)
         setAddPlanVisible(false)
     }
-    const submitAddFactHandler = (label, amount, kind) => {
-        addFact(label, amount, kind)
+    const submitAddFactHandler = (item) => {
+        recordsStore.createRecord("fact", item)
         setAddFactVisible(false)
     }
 
     const submitPeriodPickerHandler = (from, to) => {
-        setPeriod([from, to])
+        recordsStore.setPeriod(from, to)
         setPeriodPickerVisible(false)
     }
 
@@ -82,7 +84,7 @@ export default function BudgetHeader({ addPlan, addFact, setPeriod,period, setMo
                             <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
                             <Col>
                                 <Button onClick={openPeriodPickerHandler} color='grey'>
-                                    {period[0].toDateString()}-{period[1].toDateString()}
+                                    {recordsStore.period[0].toDateString()}-{recordsStore.period[1].toDateString()}
                                 </Button>
                             </Col>
                             <Button onClick={openAddPlanHandler} color='gradient' auto>Add planing spending</Button>
@@ -112,4 +114,4 @@ export default function BudgetHeader({ addPlan, addFact, setPeriod,period, setMo
             </Button>
         </Grid> : <></>}
     </>)
-}
+})

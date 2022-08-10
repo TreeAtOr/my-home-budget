@@ -40,7 +40,7 @@ const renderCellsFactory = (size, onEdit, onDelete) => {
     return (item) => [
         <Table.Cell key={item.id + 'h'}>{item.label}</Table.Cell>,
         <Table.Cell key={item.id + 'a'}>{item.amount}</Table.Cell>,
-        <Table.Cell key={item.id + 'd'}>{new Date(item.created_at).toLocaleDateString()}</Table.Cell>,
+        <Table.Cell key={item.id + 'd'}>{new Date(item.date).toLocaleDateString()}</Table.Cell>,
         <Table.Cell key={item.id + 'k'}>{item.kind}</Table.Cell>,
         <Table.Cell key={item.id + 'T'}>
             <Row>

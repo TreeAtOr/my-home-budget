@@ -3,6 +3,7 @@ import { NextUIProvider, createTheme } from '@nextui-org/react';
 
 import { Chart, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js'
 import Head from 'next/head';
+import { ErrorBoundary } from '../utils/ErrorBoundary';
 Chart.register(BarElement)
 Chart.register(ArcElement);
 Chart.register(CategoryScale);
@@ -46,7 +47,9 @@ function MyApp({ Component, pageProps }) {
     </Head>
 
     <NextUIProvider>
-      <Component {...pageProps} />
+      <ErrorBoundary>
+        <Component {...pageProps} />
+      </ErrorBoundary>
     </NextUIProvider>
   </>)
 }

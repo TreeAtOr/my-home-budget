@@ -1,116 +1,89 @@
 import { Text, Table, Container, Grid, Row, Col, Spacer, Button, Card, Link } from '@nextui-org/react';
 import { useState, useEffect, useMemo } from 'react'
-import { supabase } from '../utils/supabaseClient'
-import BarDiagram from './diagrams/BarDiagram';
-import DonutDiagram from './diagrams/DonutDiagram';
 import { AddRecordModal } from './modals/AddRecordModal';
-import { ErrorModal } from './modals/ErrorModal';
-import { InformationModal } from './modals/InformationModal';
 import { SpendingTable } from './tables/SpendingTable';
-import { TotalTable } from './tables/TotalTable';
-import useAdaptivity from '../utils/hooks/useAdaptivity';
 import Footer from '../components/ui/Footer'
-import { SelectPeriodModal } from './modals/SelectPeriodModal';
-import { useLocalStorage } from '../utils/hooks/useLocalStorage';
-import { useRecordsTableHelper } from '../utils/hooks/useRecordsTableHelper';
 import { useAdaptiveMode } from '../utils/hooks/useAdaptiveMode';
-import { TotalOverview } from './TotalOverview';
 import BudgetHeader from './BudgetHeader';
+import { observer } from 'mobx-react-lite';
+import { recordsStore } from '../store/RecordsStore';
+import { TotalOverview } from './TotalOverview'
 
-export default function Budget({ session, logout }) {
-    const [dataLoading, setDataLoading] = useState(true)
-
-    const [isErrorVisible, setErrorVisible] = useState(false);
-    const [errorMessage, setMessage] = useState('');
-
-
-    const [data, setData] = useState()
-
-
-    const [period, setPeriod] = useState([new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())])
-
+export default observer(function Budget({ session, logout }) {
     const [mode, setMode] = useAdaptiveMode('desktop') //'mfact' 'mplan', 'mdiagrams'
 
-    const [RecordToEdit, setRecordToEdit] = useState()
-
-    const errorCloseHandler = () => setErrorVisible(false)
-
-    const setError = useMemo(() => (error) => {
-        if (!error) setErrorVisible(false)
-        else {
-            setMessage(error.error_description || error.message)
-            setErrorVisible(true)
-        }
-    }, [])
-
-    const onUpdate = useMemo(() => () => getData(), [])
-
-    const [
-        planLoading, planTable, addPlan, deletePlan
-    ] = useRecordsTableHelper("plan", period, setError, onUpdate)
-
-    const [
-        factLoading, factTable, addFact, deleteFact
-    ] = useRecordsTableHelper("fact", period, setError, onUpdate)
 
 
+    const [recordToEdit, setRecordToEdit] = useState()
+    const [isEditFactVisible, setEditFactVisible] = useState(false)
+    const [isEditPlanVisible, setEditPlanVisible] = useState(false)
 
 
-    useEffect(() => {
-        getData()
-    }, [session, period])
-
-
-    async function getData() {
-        try {
-            setDataLoading(true)
-            let { data, error, status } = await supabase.rpc('total_by_period', {
-                _to: period[1].toISOString(),
-                _from: period[0].toISOString()
-            })
-            if (error && status !== 406) throw error
-            if (data) setData(data)
-        } catch (error) {
-            alert(error.message)
-        } finally {
-            setDataLoading(false)
-        }
+    const onEditFactRecordOpen = (item) => {
+        setRecordToEdit(item)
+        setEditFactVisible(true)
     }
-
-
 
     const onEditFactRecordClose = () => {
-
+        setRecordToEdit()
+        setEditFactVisible(false)
     }
 
-    const onDeletePlanRecord = (id) => deletePlan(id)
-    const onDeleteFactRecord = (id) => deleteFact(id)
+    const onEditFactRecordSubmitted = (item) => {
+        recordsStore.updateRecord("fact",item)
+        setEditFactVisible(false)
+        setRecordToEdit()
+    }
 
+    const onEditPlanRecordOpen = (item) => {
+        setEditPlanVisible(true)
+        setRecordToEdit(item)
+        console.log(item);
+    }
 
+    const onEditPlanRecordClose = () => {
+        setEditPlanVisible(false)
+        setRecordToEdit()
+    }
+
+    const onEditPlanRecordSubmitted = (item) => {
+        recordsStore.updateRecord("plan",item)
+        setEditPlanVisible(false)
+        setRecordToEdit()
+    }
+
+    const onDeletePlanRecord = (id) => recordsStore.deleteRecord("plan",id)
+    const onDeleteFactRecord = (id) => recordsStore.deleteRecord("fact",id)
+     
     return (
         <Container gap={mode !== 'desktop' ? 0 : 4} justify="flex-start">
-            <ErrorModal
-            closeHandler={errorCloseHandler}
-            isVisible={isErrorVisible}
-            message={errorMessage} />
+            <AddRecordModal
+                state={recordToEdit}
+                closeHandler={onEditFactRecordClose}
+                submitHandler={onEditFactRecordSubmitted}
+                isVisible={isEditFactVisible}
+            />
+            <AddRecordModal
+                state={recordToEdit}
+                closeHandler={onEditPlanRecordClose}
+                submitHandler={onEditPlanRecordSubmitted}
+                isVisible={isEditPlanVisible}
+            />
             <Spacer y={mode == 'desktop' ? 1 : 0} />
             <Grid.Container gap={0.7}>
                 <BudgetHeader
-                    addPlan={addPlan}
-                    addFact={addFact}
-                    period={period}
-                    setPeriod={setPeriod}
                     mode={mode}
-                    setMode={setMode} 
-                    />
-                <TotalOverview mode={mode} data={data} dataLoading={dataLoading} />
+                    setMode={setMode}
+                />
+                <TotalOverview mode={mode}/>
 
 
                 {mode == 'desktop' || mode == 'mplan' ?
                     <Grid md={6} xs={12}>
                         <Col><SpendingTable
                             onDelete={onDeletePlanRecord}
-                            data={planLoading ? [] : planTable}
+                            onEdit={onEditPlanRecordOpen}
+                            data={recordsStore.records.get("plan")}
                             rowsPerPage={mode == 'desktop' ? 10 : 11}
                         /></Col>
                     </Grid> : <></>
@@ -119,7 +92,8 @@ export default function Budget({ session, logout }) {
                     <Grid md={6} xs={12}>
                         <Col><SpendingTable
                             onDelete={onDeleteFactRecord}
-                            data={factLoading ? [] : factTable}
+                            onEdit={onEditFactRecordOpen}
+                            data={recordsStore.records.get("fact")}
                             rowsPerPage={mode == 'desktop' ? 10 : 11}
                         /></Col>
                     </Grid> : <></>
@@ -128,4 +102,4 @@ export default function Budget({ session, logout }) {
             </Grid.Container>
 
         </Container>)
-}
+})

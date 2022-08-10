@@ -1,5 +1,7 @@
 import { Col, Grid } from "@nextui-org/react"
+import { observer } from "mobx-react-lite"
 import { useEffect, useState } from "react"
+import { recordsStore } from "../store/RecordsStore"
 import BarDiagram from "./diagrams/BarDiagram"
 import DonutDiagram from "./diagrams/DonutDiagram"
 import { TotalTable } from "./tables/TotalTable"
@@ -16,13 +18,13 @@ function getColorByName(name) {
 }
 
 
-export function TotalOverview({ mode, data, dataLoading }) {
+export const TotalOverview = observer(function({ mode }) {
     const [factDiagram, setFactDiagram] = useState()
     const [planDiagram, setPlanDiagram] = useState()
     const [composedDiagram, setComposedDiagram] = useState()
 
     useEffect(() => {
-        if (data === undefined) return
+        if (recordsStore.total === undefined) return
         const _fact = {
             labels: [],
             datasets: [{
@@ -40,7 +42,7 @@ export function TotalOverview({ mode, data, dataLoading }) {
             }]
         }
 
-        for (let i of data) {
+        for (let i of recordsStore.total) {
             _fact.labels.push(i.total_kind)
             _fact.datasets[0].data.push(i.total_fact)
             _fact.datasets[0].backgroundColor.push(getColorByName(i.total_kind))
@@ -58,7 +60,7 @@ export function TotalOverview({ mode, data, dataLoading }) {
             labels: _fact.labels,
             datasets: [_fact.datasets[0], _plan.datasets[0]]
         })
-    }, [data])
+    }, [recordsStore.total])
 
     return (<>
         {mode == 'desktop' ? <>
@@ -74,10 +76,9 @@ export function TotalOverview({ mode, data, dataLoading }) {
             </Grid>
             <Grid md={12} xs={12}>
                 <Col>
-                    <TotalTable data={dataLoading ? [] : data} rowsPerPage={mode == 'desktop' ? 6 : 5} />
+                    <TotalTable data={recordsStore.total} rowsPerPage={mode == 'desktop' ? 6 : 5} />
                 </Col>
             </Grid>
         </> : <></>}
     </>)
-
-}
+})
