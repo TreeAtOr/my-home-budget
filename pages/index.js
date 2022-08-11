@@ -5,6 +5,7 @@ import { Col, Container, Link, Row, Spacer, Text } from '@nextui-org/react'
 import { recordsStore } from '../store/RecordsStore'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/router'
+import useTranslation from 'next-translate/useTranslation'
 
 export default observer(function Home() {
   const router = useRouter()
