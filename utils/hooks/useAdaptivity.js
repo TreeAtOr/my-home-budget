@@ -10,7 +10,11 @@ function widthToBreakpoints(width) {
 
 
 export default function useAdaptivity() {
-    const [status, setStatus] = useState(widthToBreakpoints(window.innerWidth));
+    const [status, setStatus] = useState('md');
+
+    useEffect(() => {
+        setStatus(widthToBreakpoints(window.innerWidth))
+    }, [])
     useEffect(() => {
             const handleResizeWindow = () => setStatus(widthToBreakpoints(window.innerWidth));
             window.addEventListener("resize", handleResizeWindow);

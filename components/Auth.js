@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
 import { ErrorModal } from './modals/ErrorModal';
 import { Container, Text, Input, Button, Spacer, Row, Col } from "@nextui-org/react";
 import useTranslation from 'next-translate/useTranslation';

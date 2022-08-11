@@ -9,7 +9,7 @@ import { observer } from 'mobx-react-lite';
 import { recordsStore } from '../store/RecordsStore';
 import { TotalOverview } from './TotalOverview'
 
-export default observer(function Budget({ session, logout }) {
+export default observer(function Budget({ logout }) {
     const [mode, setMode] = useAdaptiveMode('desktop') //'mfact' 'mplan', 'mdiagrams'
 
 

@@ -12,7 +12,7 @@ import useTranslation from "next-translate/useTranslation";
 export default observer(function BudgetHeader({ setMode, mode }) {
     const { t } = useTranslation('common');
 
-    const [isGreetingsVisible, setGreetingsVisible] = useLocalStorage('is-new', true);
+    const [isGreetingsVisible, setGreetingsVisible] = useLocalStorage('is-new', false);
 
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
     const [isAddFactVisible, setAddFactVisible] = useState(false);
