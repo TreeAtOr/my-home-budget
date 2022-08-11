@@ -1,4 +1,5 @@
 import {Table, Text} from "@nextui-org/react"
+import useTranslation from "next-translate/useTranslation";
 
 function renderPercentage(val) {
     if(val === null || val === undefined) return (<Text size={16} b color='red'>∞% ↑</Text>);
@@ -7,6 +8,8 @@ function renderPercentage(val) {
 }
 
 export function TotalTable({ data,rowsPerPage  }) {
+    const { t } = useTranslation('common')
+
     return (<Table
         aria-label="Total table"
         css={{
@@ -15,10 +18,10 @@ export function TotalTable({ data,rowsPerPage  }) {
         }}
     >
         <Table.Header>
-            <Table.Column>KIND</Table.Column>
-            <Table.Column>PLAN</Table.Column>
-            <Table.Column>FACT</Table.Column>
-            <Table.Column>CHANGE</Table.Column>
+            <Table.Column>{t('TableKind')}</Table.Column>
+            <Table.Column>{t('TablePlan')}</Table.Column>
+            <Table.Column>{t('TableFact')}</Table.Column>
+            <Table.Column>{t('TableChange')}</Table.Column>
         </Table.Header>
         <Table.Body items={data}>
             {(item) => (

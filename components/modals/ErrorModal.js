@@ -1,6 +1,9 @@
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
+import useTranslation from "next-translate/useTranslation";
 
 export function ErrorModal({ isVisible, closeHandler, message }) {
+    const { t } = useTranslation('common')
+
     return (<Modal
         closeButton
         aria-labelledby="modal-title"
@@ -9,10 +12,10 @@ export function ErrorModal({ isVisible, closeHandler, message }) {
     >
         <Modal.Header>
             <Text id="modal-title" size={18}>
-            <Text b size={18}>
-                Ops! 
+                <Text b size={18}>
+                {t('ErrorModalHeaderBold')}
                 </Text>
-                    Something bad happened! 🪲
+                {t('ErrorModalHeader')}🪲
             </Text>
         </Modal.Header>
         <Modal.Body>
@@ -22,7 +25,7 @@ export function ErrorModal({ isVisible, closeHandler, message }) {
         </Modal.Body>
         <Modal.Footer>
             <Button auto flat color="error" onClick={closeHandler}>
-                Close
+                {t('buttonClose')}
             </Button>
         </Modal.Footer>
     </Modal>)

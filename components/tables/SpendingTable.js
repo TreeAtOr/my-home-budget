@@ -1,23 +1,24 @@
 import { faEdit, faFileEdit, faTrash } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Button, Row, Spacer, Table, Text } from "@nextui-org/react"
+import useTranslation from "next-translate/useTranslation"
 import { useMemo } from "react"
 import useAdaptivity from "../../utils/hooks/useAdaptivity"
 
-const renderHeader = (size) => {
+const renderHeader = (size, t) => {
     if (size == 'xs') return [
-        <Table.Column key={1}>LABEL</Table.Column>,
-        <Table.Column key={2}>AMOUNT</Table.Column>,
-        <Table.Column key={4}>KIND</Table.Column>,
-        <Table.Column key={5}>EDIT</Table.Column>,
+        <Table.Column key={1}>{t('TableLabel')}</Table.Column>,
+        <Table.Column key={2}>{t('TableAmount')}</Table.Column>,
+        <Table.Column key={4}>{t('TableKind')}</Table.Column>,
+        <Table.Column key={5}>{t('')}</Table.Column>,
     ]
 
     return [
-        <Table.Column key={1}>LABEL</Table.Column>,
-        <Table.Column key={2}>AMOUNT</Table.Column>,
-        <Table.Column key={3}>DATE</Table.Column>,
-        <Table.Column key={4}>KIND</Table.Column>,
-        <Table.Column key={5}>EDIT</Table.Column>,
+        <Table.Column key={1}>{t('TableLabel')}</Table.Column>,
+        <Table.Column key={2}>{t('TableAmount')}</Table.Column>,
+        <Table.Column key={3}>{t('TableDate')}</Table.Column>,
+        <Table.Column key={4}>{t('TableKind')}</Table.Column>,
+        <Table.Column key={5}>{t('TableEdit')}</Table.Column>,
     ]
 }
 
@@ -54,12 +55,12 @@ const renderCellsFactory = (size, onEdit, onDelete) => {
 }
 
 export function SpendingTable({ data, rowsPerPage, onEdit, onDelete }) {
+    const { t } = useTranslation('common')
     const size = useAdaptivity()
 
-    const header = useMemo(() => renderHeader(size), [size])
+    const header = useMemo(() => renderHeader(size, t), [size, t])
     const renderCells = useMemo(() => renderCellsFactory(size, onEdit, onDelete), [size])
     return (<Table
-        aria-label="Example table with dynamic content"
         css={{
             height: "auto",
             minWidth: "100%",

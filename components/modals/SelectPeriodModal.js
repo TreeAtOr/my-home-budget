@@ -1,7 +1,10 @@
 import { Modal, Button, Text, Input, Grid, Checkbox, Spacer } from "@nextui-org/react";
+import useTranslation from "next-translate/useTranslation";
 import { useState } from "react";
 
 export function SelectPeriodModal({ isVisible, closeHandler, submitHandler }) {
+    const { t } = useTranslation('common')
+
     const [from, setFrom] = useState()
     const [to, setTo] = useState()
 
@@ -17,7 +20,7 @@ export function SelectPeriodModal({ isVisible, closeHandler, submitHandler }) {
     >
         <Modal.Header>
             <Text id="modal-title" size={18}>
-                Enter your new period
+            {t('EnterPeriod')}
             </Text>
         </Modal.Header>
         <Modal.Body>
@@ -26,20 +29,20 @@ export function SelectPeriodModal({ isVisible, closeHandler, submitHandler }) {
                 type={"date"}
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
-                label="From" />
+                label={t('formFrom')} />
             <Spacer y={0.2} />
             <Input
                 type={"date"}
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                label="To" />
+                label={t('formTo')} />
         </Modal.Body>
         <Modal.Footer>
             <Button auto flat disabled={!(from && to)} color="primary" onClick={setPeriodHandler}>
-                Set period
+            {t('buttonSetPeriod')}
             </Button>
             <Button auto flat color="error" onClick={closeHandler}>
-                Close
+            {t('buttonClose')}
             </Button>
         </Modal.Footer>
     </Modal>)

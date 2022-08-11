@@ -1,5 +1,6 @@
 import { Col, Grid } from "@nextui-org/react"
 import { observer } from "mobx-react-lite"
+import useTranslation from "next-translate/useTranslation"
 import { useEffect, useState } from "react"
 import { recordsStore } from "../store/RecordsStore"
 import BarDiagram from "./diagrams/BarDiagram"
@@ -22,6 +23,8 @@ export const TotalOverview = observer(function({ mode }) {
     const [factDiagram, setFactDiagram] = useState()
     const [planDiagram, setPlanDiagram] = useState()
     const [composedDiagram, setComposedDiagram] = useState()
+
+    const { t } = useTranslation('common');
 
     useEffect(() => {
         if (recordsStore.total === undefined) return
@@ -65,14 +68,14 @@ export const TotalOverview = observer(function({ mode }) {
     return (<>
         {mode == 'desktop' ? <>
             <Grid md={3} xs={6}>
-                <DonutDiagram data={factDiagram} title="FACT SPENDING" />
+                <DonutDiagram data={factDiagram} title={t('FactSpendingHeader')} />
             </Grid>
             <Grid md={3} xs={6}>
-                <DonutDiagram data={planDiagram} title="PLAN SPENDING" />
+                <DonutDiagram data={planDiagram} title={t('PlanSpendingHeader')} />
             </Grid></> : <></>}
         {mode == 'desktop' || mode == 'mdiagrams' ? <>
             <Grid md={6} xs={12}>
-                <BarDiagram data={composedDiagram} title="COMPARING" />
+                <BarDiagram data={composedDiagram} title={t('ComparingHeader')} />
             </Grid>
             <Grid md={12} xs={12}>
                 <Col>

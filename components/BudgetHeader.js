@@ -7,8 +7,11 @@ import { ErrorModal } from "./modals/ErrorModal";
 import { InformationModal } from "./modals/InformationModal";
 import { SelectPeriodModal } from "./modals/SelectPeriodModal";
 import { recordsStore } from '../store/RecordsStore';
+import useTranslation from "next-translate/useTranslation";
 
 export default observer(function BudgetHeader({ setMode, mode }) {
+    const { t } = useTranslation('common');
+
     const [isGreetingsVisible, setGreetingsVisible] = useLocalStorage('is-new', true);
 
     const [isAddPlanVisible, setAddPlanVisible] = useState(false);
@@ -49,11 +52,11 @@ export default observer(function BudgetHeader({ setMode, mode }) {
             closeHandler={closeGreetingHandler}
             headline="🌟 Greetings! 🌟"
         >
-            <Text>{"First time here? So... Let`s start planing."}</Text>
-            <Text>{'To create a new planed spending, press a button "Add planed spending" in top-right corner.'}</Text>
+            <Text>{t('GreetingsHeader')}</Text>
+            <Text>{t('GreetingsContent')}</Text>
             <Spacer y={0.3} />
-            <Text>Want more information?</Text>
-            <Link href='https://youtu.be/jV9uXh_1Pso'>Watch the guid on YouTube </Link>
+            <Text>{t('GreetingsMoreInformation')}</Text>
+            <Link href='https://youtu.be/jV9uXh_1Pso'>{t('WatchGuidOnYouTube')}</Link>
         </InformationModal>
         <AddRecordModal
             isVisible={isAddPlanVisible}
@@ -81,15 +84,15 @@ export default observer(function BudgetHeader({ setMode, mode }) {
                         :
                         <Row justify='space-between'>
                             <Spacer x={1} />
-                            <Col><Text b size={24} color="gray">{"Your budget overview".toUpperCase()}</Text></Col>
+                            <Col><Text b size={24} color="gray">{t('BudgetOverviewHeader').toUpperCase()}</Text></Col>
                             <Col>
                                 <Button onClick={openPeriodPickerHandler} color='grey'>
                                     {recordsStore.period[0].toDateString()}-{recordsStore.period[1].toDateString()}
                                 </Button>
                             </Col>
-                            <Button onClick={openAddPlanHandler} color='gradient' auto>Add planing spending</Button>
+                            <Button onClick={openAddPlanHandler} color='gradient' auto>{t('AddPlanSpending')}</Button>
                             <Spacer x={1} />
-                            <Button onClick={openAddFactHandler} color='primary' auto>Add fact spending</Button>
+                            <Button onClick={openAddFactHandler} color='primary' auto>{t('AddFactSpending')}</Button>
                         </Row>}
                 </Card.Body>
             </Card>
@@ -100,7 +103,7 @@ export default observer(function BudgetHeader({ setMode, mode }) {
                 onClick={openAddPlanHandler}
                 color='gradient'
                 auto>
-                Add planing spending
+                {t('AddPlanSpending')}
             </Button>
         </Grid> : <></>}
 
@@ -110,7 +113,7 @@ export default observer(function BudgetHeader({ setMode, mode }) {
                 onClick={openAddFactHandler}
                 color='gradient'
                 auto>
-                Add fact spending
+                {t('AddFactSpending')}
             </Button>
         </Grid> : <></>}
     </>)

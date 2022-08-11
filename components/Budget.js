@@ -100,6 +100,5 @@ export default observer(function Budget({ session, logout }) {
                 }
                 {mode == 'desktop' ? <Grid md={12} xs={12}><Footer logout={logout} /></Grid> : <></>}
             </Grid.Container>
-
         </Container>)
 })

@@ -1,7 +1,10 @@
 import { Modal, Button, Text, Input, Grid, Checkbox, Spacer } from "@nextui-org/react";
+import useTranslation from "next-translate/useTranslation";
 import { useEffect, useState } from "react";
 
 export function AddRecordModal({ state, isVisible, closeHandler, submitHandler }) {
+    const { t } = useTranslation('common')
+
     const [label, setLabel] = useState(state ? state.label : "")
     const [amount, setAmount] = useState(state ? state.amount : undefined)
     const [date, setDate] = useState(state ? state.date : new Date())
@@ -30,7 +33,7 @@ export function AddRecordModal({ state, isVisible, closeHandler, submitHandler }
     >
         <Modal.Header>
             <Text id="modal-title" size={18}>
-                What spending you are looking for?
+            {t('AddRecordModalHeader')}
             </Text>
         </Modal.Header>
         <Modal.Body>
@@ -39,24 +42,24 @@ export function AddRecordModal({ state, isVisible, closeHandler, submitHandler }
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
                 clearable
-                labelPlaceholder="Label" />
+                labelPlaceholder={t('formLabel')} />
             <Spacer y={0.2} />
             <Input value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 type="number"
-                labelPlaceholder="Amount" />
+                labelPlaceholder={t('formAmount')} />
             <Spacer y={0.2} />
             <Input
                 value={kind}
                 onChange={(e) => setKind(e.target.value)}
                 clearable
-                labelPlaceholder="Kind" />
+                labelPlaceholder={t('formKind')} />
             <Spacer y={0.1} />
             <Input
                 type={"date"}
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                label="Date(optional)" />
+                label={t('formDate')} />
         </Modal.Body>
         <Modal.Footer>
             <Button auto flat disabled={!(label && amount)} color="primary" onClick={addRecordHandler}>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import { ErrorModal } from './modals/ErrorModal';
 import { Container, Text, Input, Button, Spacer, Row, Col } from "@nextui-org/react";
-
+import useTranslation from 'next-translate/useTranslation';
 import { MagicLinkModal } from './modals/MagicLinkModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -14,6 +14,7 @@ export default function Auth() {
   const [isErrorVisible, setErrorVisible] = useState(false);
   const [errorMessage, setMessage] = useState('');
 
+  const { t } = useTranslation('common');
 
   const handleLogin = async (email) => {
     try {
@@ -55,14 +56,14 @@ export default function Auth() {
           <Text size={32} b>My Home Budget</Text>
         </Row>
         <Row justify="center" >
-          <Text size={16}>Sign in via magic link with your email below</Text>
+          <Text size={16}>{t('SignMagicLink')}</Text>
         </Row>
         <Spacer y={2} />
         <Row justify="center" >
           <Input
             size="md"
             type="email"
-            placeholder="Your email"
+            placeholder={t('placeholderEmail')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -75,7 +76,7 @@ export default function Auth() {
             size="md"
             disabled={loading}
           >
-            <span>{loading ? 'Loading' : 'Send magic link'}</span>
+            <span>{loading ? t('Loading') : t('SendMagicLink')}</span>
           </Button>
         </Row>
         <Spacer y={0.5} />
@@ -84,7 +85,7 @@ export default function Auth() {
         <Row justify="center"><Button color="primary" onClick={(e) => {
           e.preventDefault()
           handleOAuth("google")
-        }} disabled={loading}>Sign with Google<Spacer y={0.5} /><FontAwesomeIcon icon={faGoogle} /></Button></Row>
+        }} disabled={loading}>{t('SignWithGoogle')}<Spacer y={0.5} /><FontAwesomeIcon icon={faGoogle} /></Button></Row>
       </Container>
     </Container>
   )
