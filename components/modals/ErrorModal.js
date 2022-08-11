@@ -1,9 +1,10 @@
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
 import useTranslation from "next-translate/useTranslation";
+import { useRouter } from "next/router";
 
 export function ErrorModal({ isVisible, closeHandler, message }) {
     const { t } = useTranslation('common')
-
+    const router = useRouter()
     return (<Modal
         closeButton
         aria-labelledby="modal-title"
@@ -13,7 +14,7 @@ export function ErrorModal({ isVisible, closeHandler, message }) {
         <Modal.Header>
             <Text id="modal-title" size={18}>
                 <Text b size={18}>
-                {t('ErrorModalHeaderBold')}
+                    {t('ErrorModalHeaderBold')}
                 </Text>
                 {t('ErrorModalHeader')}🪲
             </Text>
@@ -24,6 +25,9 @@ export function ErrorModal({ isVisible, closeHandler, message }) {
             </Text>
         </Modal.Body>
         <Modal.Footer>
+            <Button auto flat color="primary" onClick={()=>router.push('/report')}>
+                {t('buttonReport')}
+            </Button>
             <Button auto flat color="error" onClick={closeHandler}>
                 {t('buttonClose')}
             </Button>

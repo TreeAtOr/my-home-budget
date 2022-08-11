@@ -14,10 +14,10 @@ export class RecordsStore {
     session = this.supabase.auth.session()
     total = []
     constructor() {
-        makeAutoObservable(this,{},{deep: true})
+        makeAutoObservable(this, {}, { deep: true })
         this.supabase.auth.onAuthStateChange((_event, session) => {
             this.session = session
-            if(!session) return;
+            if (!session) return;
 
             this.readRecords("fact")
             this.readRecords("plan")
@@ -26,12 +26,12 @@ export class RecordsStore {
     }
 
     async createRecord(dest, record) {
-        let { data, error, status } = await supabase
+        let { data, error, status } = await this.supabase
             .from(dest)
             .insert([record])
         if (error && status !== 406) throw error
         if (!data) return;
-        
+
         this.readRecords(dest)
         this.computeTotal()
     }
@@ -62,7 +62,7 @@ export class RecordsStore {
             .eq("id", record.id)
         if (error && status !== 406) throw error
         if (!data || data.length === 0) return
-        
+
         this.readRecords(dest)
         this.computeTotal()
     }
@@ -78,14 +78,21 @@ export class RecordsStore {
 
     setPeriod(from, to) {
         this.period = [from, to]
+        this.readRecords("fact")
+        this.readRecords("plan")
+        this.computeTotal()
     }
 
-    async reportBug(report) {
-        let { data, error, status } = await supabase
-            .from(dest)
-            .insert([record])
-        if (error && status !== 406) alert("Error was happened during bug report process. Please? contact developer ")
-
+    async reportBug(description, error) {
+        const report = {
+            description,
+            error,
+            device_info: window?.navigator.userAgent
+        }
+        let { data, _error, _status } = await this.supabase
+            .from("reports")
+            .insert([report], { returning: "minimal" })
+        if (_error && _status !== 406) alert("Error was happened during bug report process. Please, contact developer ")
     }
 }
 
