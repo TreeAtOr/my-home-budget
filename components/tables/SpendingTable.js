@@ -25,10 +25,10 @@ const renderHeader = (size, t) => {
 const renderCellsFactory = (size, onEdit, onDelete) => {
     if (size == 'xs') return (item) => [
         <Table.Cell key={item.id + 'h'}>
-            {(item.label.length > 13) ? item.label.slice(0, 13) + '...' : item.label}
+            {(item.label.length > 10) ? item.label.slice(0, 10) + '...' : item.label}
         </Table.Cell>,
-        <Table.Cell key={item.id + 'a'}>{item.amount}</Table.Cell>,
-        <Table.Cell key={item.id + 'k'}>{(item.kind.length > 13) ? item.kind.slice(0, 13) + '...' : item.kind}</Table.Cell>,
+        <Table.Cell key={item.id + 'a'}>{item.amount >= 1000?item.amount/1000 +'k':item.amount}</Table.Cell>,
+        <Table.Cell key={item.id + 'k'}>{(item.kind.length > 10) ? item.kind.slice(0, 10) + '...' : item.kind}</Table.Cell>,
         <Table.Cell key={item.id + 'T'}>
             <Row>
                 <FontAwesomeIcon onClick={() => onEdit(item.id)} cursor="select" color="gray" icon={faEdit} />
