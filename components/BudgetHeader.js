@@ -97,6 +97,17 @@ export default observer(function BudgetHeader({ setMode, mode }) {
                 </Card.Body>
             </Card>
         </Grid>
+
+        {mode == 'mdiagrams' ? <Grid xs={12}>
+            <Button
+                css={{ width: '100%' }}
+                onClick={openPeriodPickerHandler}
+                color='gradient'
+                auto>
+                {recordsStore.period[0].toDateString()}-{recordsStore.period[1].toDateString()}
+            </Button>
+        </Grid> : <></>}
+
         {mode == 'mplan' ? <Grid xs={12}>
             <Button
                 css={{ width: '100%' }}

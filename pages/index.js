@@ -15,7 +15,9 @@ export default observer(function Home() {
   const router = useRouter()
   const { t } = useTranslation('common')
   const size = useAdaptivity()
-
+  useEffect(()=> {
+    
+  })
   const handleLogInButton = () => {
     if (recordsStore.session) router.push('/overview')
     else router.push('/auth')
