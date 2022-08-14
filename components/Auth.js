@@ -6,6 +6,7 @@ import { MagicLinkModal } from './modals/MagicLinkModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import useAdaptivity from '../utils/hooks/useAdaptivity';
+import { recordsStore } from '../store/RecordsStore';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
@@ -19,7 +20,7 @@ export default function Auth() {
   const handleLogin = async (email) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signIn({ email })
+      const { error } = await recordsStore.supabase.auth.signIn({ email })
       if (error) throw error
       setAlertVisible(true)
     } catch (error) {
@@ -33,7 +34,7 @@ export default function Auth() {
   const handleOAuth = async (provider) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signIn({ provider })
+      const { error } = await recordsStore.supabase.auth.signIn({ provider })
       if (error) throw error
     } catch (error) {
       setMessage(error.error_description || error.message)
