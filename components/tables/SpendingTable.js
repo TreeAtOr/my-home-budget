@@ -31,7 +31,7 @@ const renderCellsFactory = (size, onEdit, onDelete) => {
         <Table.Cell key={item.id + 'k'}>{(item.kind.length > 10) ? item.kind.slice(0, 10) + '...' : item.kind}</Table.Cell>,
         <Table.Cell key={item.id + 'T'}>
             <Row>
-                <FontAwesomeIcon onClick={() => onEdit(item.id)} cursor="select" color="gray" icon={faEdit} />
+                <FontAwesomeIcon onClick={() => onEdit(item)} cursor="select" color="gray" icon={faEdit} />
                 <Spacer x={0.2} />
                 <FontAwesomeIcon onClick={() => onDelete(item.id)} cursor="select" color="gray" icon={faTrash} />
             </Row>
