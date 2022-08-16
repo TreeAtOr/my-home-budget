@@ -62,5 +62,14 @@
     "NextjsDescription": "Современный Фреймворк для React предоставляющий SSR, smart bundling и роутинг.",
     "SupabaseDescription":"Supabase это альтернатива Firebase с открытым исходным кодом, построенная поверх Postgres.",
     "MobxDescription":"MobX это библиотека делающая управление состоянием простым и масштабируемым при помощи реактивного программирования.",
-    "buttonLogIn": "Log In"
+    "buttonLogIn": "Войти",
+    "buttonSpending": "Траты",
+    "buttonIncome": "Доходы",
+    "buttonOnetime" : "Единовремено",
+    "buttonRepeatable": "Повторяющаяся",
+    "buttonAddRecord": "Добавить записи",
+    "formEvery": "Каждый...",
+    "formDays": "День",
+    "formMonths": "Месяц",
+    "formYears": "Год"
 }

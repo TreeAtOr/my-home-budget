@@ -1,28 +1,40 @@
 import { action, makeAutoObservable } from "mobx";
 
 import { createClient } from '@supabase/supabase-js'
+import { getCookie, hasCookie, setCookie } from "cookies-next";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-
+const DEFAULT_PERIOD = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
 
 export class RecordsStore {
-    period = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
+    period
     records = new Map([["fact", []], ["plan", []]])
     supabase = createClient(supabaseUrl, supabaseAnonKey)
     session = this.supabase.auth.session()
     total = []
     constructor() {
         makeAutoObservable(this, {}, { deep: true })
+        console.log(this.period);
+        if (hasCookie('period')) {
+            console.log(getCookie('period'));
+            this.period = JSON.parse(getCookie('period').toString()).map(str => new Date(str))
+        } else {
+            this.period = DEFAULT_PERIOD
+        }
         this.supabase.auth.onAuthStateChange((_event, session) => {
             this.session = session
             if (!session) return;
-
+            console.log(this.period);
             this.readRecords("fact")
             this.readRecords("plan")
             this.computeTotal()
         })
+    }
+
+    get periodString() {
+        return `${this.period[0].toDateString()}-${this.period[1].toDateString()}`
     }
 
     async createRecord(dest, record) {
@@ -34,6 +46,26 @@ export class RecordsStore {
 
         this.readRecords(dest)
         this.computeTotal()
+    }
+    async createPeriodicRecords(dest: string, record: any, { from, to, pattern }: { from: Date, to: Date, pattern: { days, months, years } }) {
+        const { days, months } = pattern
+        const records = []
+        let date = from
+        while (date < to) {
+            records.push({ ...record, date })
+            date = new Date(date.setDate(date.getDate() + days))
+            date = new Date(date.setMonth(date.getMonth() + months))
+        }
+
+        let { data, error, status } = await this.supabase
+            .from(dest)
+            .insert(records)
+        if (error && status !== 406) throw error
+        if (!data) return;
+
+        this.readRecords(dest)
+        this.computeTotal()
+
     }
     async readRecords(dest) {
         let { data, error, status } = await this.supabase
@@ -78,21 +110,22 @@ export class RecordsStore {
 
     setPeriod(from, to) {
         this.period = [from, to]
+        setCookie('period', JSON.stringify([from.toISOString(), to.toISOString()]))
         this.readRecords("fact")
         this.readRecords("plan")
         this.computeTotal()
     }
 
-    async reportBug(description, error) {
+    async reportBug(description, _error) {
         const report = {
             description,
-            error,
+            error: _error,
             device_info: window?.navigator.userAgent
         }
-        let { data, _error, _status } = await this.supabase
+        let { data, error, status } = await this.supabase
             .from("reports")
             .insert([report], { returning: "minimal" })
-        if (_error && _status !== 406) alert("Error was happened during bug report process. Please, contact developer ")
+        if (error && status !== 406) alert("Error was happened during bug report process. Please, contact developer ")
     }
 }
 

@@ -33,11 +33,11 @@
     "formTo": "To",
     "formLabel": "Label",
     "formAmount": "Amount",
-    "formKind": "Kind",
+    "formKind": "Kind(optional)",
     "formDate": "Date(optional)",
     "ErrorModalHeader": "Something bad happened!",
     "ErrorModalHeaderBold": "Ops!",
-    "AddRecordModalHeader": "What spending you are looking for?",
+    "AddRecordModalHeader": "What you are looking for?",
     "BugReportTitle": "Thank you for your report",
     "BugReportSubtitle": "It help us to solve your problem as soon as possible",
     "BugReportMessageLabel": "Tell what was happened?",
@@ -62,5 +62,15 @@
     "NextjsDescription": "Modern React Framework what provide hybrid static & server rendering, smart bundling and routing.",
     "SupabaseDescription":"Supabase is an open source Firebase alternative, builded on top of Postgres.",
     "MobxDescription":"MobX is a battle tested library that makes state management simple and scalable by transparently applying functional reactive programming.",
-    "buttonLogIn": "Log In"
+    "buttonLogIn": "Log In",
+    "buttonSpending": "Spending",
+    "buttonIncome": "Income",
+    "buttonOnetime" : "One time",
+    "buttonRepeatable": "Repeatable",
+    "buttonAddRecord": "Add Record",
+    "formEvery": "Every",
+    "formDays": "Days",
+    "formMonths": "Months",
+    "formYears": "Years"
+
 }
