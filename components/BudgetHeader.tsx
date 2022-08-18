@@ -102,7 +102,7 @@ export default observer(
                                 <Spacer x={1} />
                                 <Col><Text b size={24} color="gray">{t('BudgetOverviewHeader').toUpperCase()}</Text></Col>
                                 <Col>
-                                    <Button onClick={openPeriodPickerHandler} color='grey'>
+                                    <Button onClick={openPeriodPickerHandler} color='default'>
                                         {periodString}
                                     </Button>
                                 </Col>
