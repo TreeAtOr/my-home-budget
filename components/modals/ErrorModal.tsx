@@ -1,8 +1,11 @@
 import { Modal, Button, Text, Input, Row, Checkbox } from "@nextui-org/react";
 import useTranslation from "next-translate/useTranslation";
 import { useRouter } from "next/router";
-
-export function ErrorModal({ isVisible, closeHandler, message }) {
+import { IAbstractModalProps } from "../../types/IAbstractModalProps";
+interface IErrorModalProps extends IAbstractModalProps  {
+    message: string;
+}
+export function ErrorModal({ isVisible, closeHandler, message }: IErrorModalProps) {
     const { t } = useTranslation('common')
     const router = useRouter()
     return (<Modal

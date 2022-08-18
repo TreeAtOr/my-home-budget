@@ -1,11 +1,14 @@
 import { faEdit, faFileEdit, faTrash } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Button, Row, Spacer, Table, Text } from "@nextui-org/react"
+import { Translate } from "next-translate"
 import useTranslation from "next-translate/useTranslation"
 import { useMemo } from "react"
+import { ITableRecord } from "../../types/ITableRecord"
 import useAdaptivity from "../../utils/hooks/useAdaptivity"
+import { Sizes, WithId } from "../../utils/types"
 
-const renderHeader = (size, t) => {
+const renderHeader = (size: Sizes, t: Translate) => {
     if (size == 'xs') return [
         <Table.Column key={1}>{t('TableLabel')}</Table.Column>,
         <Table.Column key={2}>{t('TableAmount')}</Table.Column>,
@@ -22,12 +25,15 @@ const renderHeader = (size, t) => {
     ]
 }
 
-const renderCellsFactory = (size, onEdit, onDelete) => {
-    if (size == 'xs') return (item) => [
+const renderCellsFactory = (
+    size: Sizes,
+    onEdit: (item: WithId<ITableRecord>) => void,
+    onDelete: (id: number) => void) => {
+    if (size == 'xs') return (item: WithId<ITableRecord>) => [
         <Table.Cell key={item.id + 'h'}>
             {(item.label.length > 10) ? item.label.slice(0, 10) + '...' : item.label}
         </Table.Cell>,
-        <Table.Cell key={item.id + 'a'}>{item.amount >= 1000?item.amount/1000 +'k':item.amount}</Table.Cell>,
+        <Table.Cell key={item.id + 'a'}>{item.amount >= 1000 ? item.amount / 1000 + 'k' : item.amount}</Table.Cell>,
         <Table.Cell key={item.id + 'k'}>{(item.kind.length > 10) ? item.kind.slice(0, 10) + '...' : item.kind}</Table.Cell>,
         <Table.Cell key={item.id + 'T'}>
             <Row>
@@ -38,7 +44,7 @@ const renderCellsFactory = (size, onEdit, onDelete) => {
         </Table.Cell>
     ]
 
-    return (item) => [
+    return (item: WithId<ITableRecord>) => [
         <Table.Cell key={item.id + 'h'}>{item.label}</Table.Cell>,
         <Table.Cell key={item.id + 'a'}>{item.amount}</Table.Cell>,
         <Table.Cell key={item.id + 'd'}>{new Date(item.date).toLocaleDateString()}</Table.Cell>,
@@ -71,7 +77,7 @@ export function SpendingTable({ data, rowsPerPage, onEdit, onDelete }) {
         </Table.Header>
 
         <Table.Body items={data}>
-            {(item) => (
+            {(item: WithId<ITableRecord>) => (
                 <Table.Row key={item.id}>
                     {renderCells(item)}
                 </Table.Row>
@@ -82,7 +88,7 @@ export function SpendingTable({ data, rowsPerPage, onEdit, onDelete }) {
             noMargin
             align="center"
             rowsPerPage={rowsPerPage}
-            onPageChange={(page) => console.log({ page })}
+            onPageChange={(page: number) => console.log({ page })}
         />
     </Table>)
 }

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 
-export function useLocalStorage(storageKey, fallbackState) {
-  const [value, setValue] = useState(fallbackState);
+export function useLocalStorage<T>(storageKey: string, fallbackState: T): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(fallbackState);
   useEffect(() => {
     setValue(JSON.parse(localStorage.getItem(storageKey)) ?? fallbackState)
   }, [])

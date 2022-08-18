@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { ErrorModal } from "../components/modals/ErrorModal";
 
-export class ErrorBoundary extends Component {
+export class ErrorBoundary extends Component<{ children: any[] }, { hasError: boolean, errorMessage: string }> {
     constructor(props) {
         super(props);
         this.state = { hasError: false, errorMessage: "" };
@@ -19,8 +19,8 @@ export class ErrorBoundary extends Component {
         return (<>
             <ErrorModal
                 closeHandler={() => this.setState({ hasError: false, errorMessage: "" })}
-                isVisible={this.hasError}
-                message={this.errorMessage} />
+                isVisible={this.state.hasError}
+                message={this.state.errorMessage} />
 
             {this.props.children}
         </>);

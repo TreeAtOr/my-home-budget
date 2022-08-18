@@ -2,18 +2,22 @@ import { action, makeAutoObservable } from "mobx";
 
 import { createClient } from '@supabase/supabase-js'
 import { getCookie, hasCookie, setCookie } from "cookies-next";
+import { ITableRecord } from "../types/ITableRecord";
+import { ITotalTableRecord } from "../types/ITotalTableRecord";
+import { WithId } from "../utils/types";
+import { IRepeatConditions } from "../types/IRepeatConditions";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-const DEFAULT_PERIOD = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
-
+const DEFAULT_PERIOD: [Date, Date] = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
+type TableDestination = "fact" | "plan"
 export class RecordsStore {
-    period
-    records = new Map([["fact", []], ["plan", []]])
+    period: [Date, Date]
+    records = new Map<string, ITableRecord[]>([["fact", []], ["plan", []]])
     supabase = createClient(supabaseUrl, supabaseAnonKey)
     session = this.supabase.auth.session()
-    total = []
+    total: ITotalTableRecord[] = []
     constructor() {
         makeAutoObservable(this, {}, { deep: true })
         console.log(this.period);
@@ -37,29 +41,31 @@ export class RecordsStore {
         return `${this.period[0].toDateString()}-${this.period[1].toDateString()}`
     }
 
-    async createRecord(dest, record) {
+    async createRecord(dest: TableDestination, record: ITableRecord) {
         let { data, error, status } = await this.supabase
-            .from(dest)
-            .insert([record])
+            .from<WithId<ITableRecord>>(dest)
+            .insert([record], { returning: "minimal" })
         if (error && status !== 406) throw error
         if (!data) return;
 
         this.readRecords(dest)
         this.computeTotal()
     }
-    async createPeriodicRecords(dest: string, record: any, { from, to, pattern }: { from: Date, to: Date, pattern: { days, months, years } }) {
-        const { days, months } = pattern
+    async createPeriodicRecords(dest: TableDestination, record: ITableRecord, { from, to, pattern }: IRepeatConditions) {
+        const { days, months, years } = pattern
         const records = []
         let date = from
         while (date < to) {
             records.push({ ...record, date })
-            date = new Date(date.setDate(date.getDate() + days))
-            date = new Date(date.setMonth(date.getMonth() + months))
+            date = new Date(date.setFullYear(
+                date.getFullYear() + years, 
+                date.getMonth() + months, 
+                date.getDate() + days))
         }
 
         let { data, error, status } = await this.supabase
-            .from(dest)
-            .insert(records)
+            .from<WithId<ITableRecord>>(dest)
+            .insert(records, { returning: "minimal" })
         if (error && status !== 406) throw error
         if (!data) return;
 
@@ -67,7 +73,7 @@ export class RecordsStore {
         this.computeTotal()
 
     }
-    async readRecords(dest) {
+    async readRecords(dest: TableDestination) {
         let { data, error, status } = await this.supabase
             .from(dest)
             .select(`id,label,amount,date,kind`)
@@ -87,7 +93,7 @@ export class RecordsStore {
         this.readRecords(dest)
         this.computeTotal()
     }
-    async updateRecord(dest, record) {
+    async updateRecord(dest: TableDestination, record: WithId<Partial<ITableRecord>>) {
         let { data, error, status } = await this.supabase
             .from(dest)
             .update(record)
@@ -108,7 +114,7 @@ export class RecordsStore {
         if (data) this.total = data
     }
 
-    setPeriod(from, to) {
+    setPeriod(from: Date, to: Date) {
         this.period = [from, to]
         setCookie('period', JSON.stringify([from.toISOString(), to.toISOString()]))
         this.readRecords("fact")
@@ -116,7 +122,7 @@ export class RecordsStore {
         this.computeTotal()
     }
 
-    async reportBug(description, _error) {
+    async reportBug(description: string, _error: string | Error) {
         const report = {
             description,
             error: _error,

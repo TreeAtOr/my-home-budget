@@ -1,13 +1,18 @@
-import {Table, Text} from "@nextui-org/react"
+import { Table, Text } from "@nextui-org/react"
 import useTranslation from "next-translate/useTranslation";
+import { ITotalTableRecord } from "../../types/ITotalTableRecord";
 
-function renderPercentage(val) {
-    if(val === null || val === undefined) return (<Text size={16} b color='red'>∞% ↑</Text>);
-    else if(val === 0) return (<Text size={16} b color='orange'>0%</Text>);
-    else if(val > 0) return (<Text size={16} b color='red'>{val}% ↑</Text>); else return (<Text size={14} b color='green'>{val}% ↓</Text>);
+
+function renderPercentage(val: number) {
+    if (val === null || val === undefined) return (<Text size={16} b color='red'>∞% ↑</Text>);
+    else if (val === 0) return (<Text size={16} b color='orange'>0%</Text>);
+    else if (val > 0) return (<Text size={16} b color='red'>{val}% ↑</Text>); else return (<Text size={14} b color='green'>{val}% ↓</Text>);
 }
-
-export function TotalTable({ data,rowsPerPage  }) {
+interface ITotalTableProps {
+    data: ITotalTableRecord[],
+    rowsPerPage: number
+}
+export function TotalTable({ data, rowsPerPage }: ITotalTableProps) {
     const { t } = useTranslation('common')
 
     return (<Table
@@ -38,7 +43,7 @@ export function TotalTable({ data,rowsPerPage  }) {
             noMargin
             align="center"
             rowsPerPage={rowsPerPage}
-            onPageChange={(page) => console.log({ page })}
+            onPageChange={(page: number) => console.log({ page })}
         />
     </Table>)
 }

@@ -1,7 +1,11 @@
 import { Modal, Button, Text, Input, Row, Checkbox, Spacer } from "@nextui-org/react";
 import useTranslation from "next-translate/useTranslation";
-
-export function InformationModal({ isVisible, closeHandler, headline, children }) {
+import { IAbstractModalProps } from "../../types/IAbstractModalProps";
+interface IInformationModalProps extends IAbstractModalProps {
+    headline: string;
+    children: Array<JSX.Element>;
+}
+export function InformationModal({ isVisible, closeHandler, headline, children }: IInformationModalProps) {
     const { t } = useTranslation('common')
 
     return (<Modal

@@ -1,6 +1,8 @@
 import { Modal, Button, Text, Input, Grid, Checkbox, Spacer, StyledButtonGroup, Row, StyledInputBlockLabel, Col } from "@nextui-org/react";
 import useTranslation from "next-translate/useTranslation";
 import { useEffect, useState } from "react";
+import { IRepeatConditions } from "../../types/IRepeatConditions";
+import { ITableRecord } from "../../types/ITableRecord";
 const DEFAULT_REPEATS = {
     from: "",
     to: "",
@@ -15,7 +17,7 @@ interface AddRecordModalProps {
     state: any,
     isVisible: boolean,
     closeHandler: () => void,
-    submitHandler: (item: any, repeats?: any) => void,
+    submitHandler: (item: ITableRecord, repeats?: IRepeatConditions) => void,
 }
 export function AddRecordModal({ state, isVisible, closeHandler, submitHandler }: AddRecordModalProps) {
     const { t } = useTranslation('common')

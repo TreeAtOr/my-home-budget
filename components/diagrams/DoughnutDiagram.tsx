@@ -1,7 +1,14 @@
 import { Container, Card, useTheme, Text, Row } from '@nextui-org/react';
+import { ChartData } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
-export default function DonutDiagram({ data, title }) {
+interface IDoughnutDiagramProps {
+    data: ChartData<"doughnut", number[], unknown>,
+    title: string
+}
+
+
+export default function DoughnutDiagram({ data, title }: IDoughnutDiagramProps) {
     return (
         <Card css={{ mw: "429px", mh: "493px" }}>
             <Card.Header>

@@ -1,10 +1,12 @@
 import { Col, Grid } from "@nextui-org/react"
+import { ChartData } from "chart.js"
 import { observer } from "mobx-react-lite"
 import useTranslation from "next-translate/useTranslation"
 import { useEffect, useState } from "react"
 import { recordsStore } from "../store/RecordsStore"
+import { LayoutMode } from "../utils/hooks/useAdaptiveMode"
 import BarDiagram from "./diagrams/BarDiagram"
-import DonutDiagram from "./diagrams/DonutDiagram"
+import DoughnutDiagram from "./diagrams/DoughnutDiagram"
 import { TotalTable } from "./tables/TotalTable"
 
 const colors = ['#17143c', '#12435e', '#0e7280', '#09a1a2', '#05d0c4', '#00ffe6', '#30ffb8', '#60ff8a', '#90ff5c', '#bfff2e', '#f2e1ef', '#f5cade', '#f8b3ce', '#fc9dbe', '#ff86ae', '#e96b96', '#d4507f', '#be3668', '#a91b51', '#93003a']
@@ -18,11 +20,13 @@ function getColorByName(name) {
     return colors[Math.abs(hash) % colors.length]
 }
 
-
-export const TotalOverview = observer(function({ mode }) {
-    const [factDiagram, setFactDiagram] = useState()
-    const [planDiagram, setPlanDiagram] = useState()
-    const [composedDiagram, setComposedDiagram] = useState()
+export interface ITotalOverviewProps {
+    mode: LayoutMode
+}
+export const TotalOverview = observer(function({ mode }: ITotalOverviewProps) {
+    const [factDiagram, setFactDiagram] = useState<ChartData<"doughnut", number[], unknown>>()
+    const [planDiagram, setPlanDiagram] = useState<ChartData<"doughnut", number[], unknown>>()
+    const [composedDiagram, setComposedDiagram] = useState<ChartData<"bar", number[], unknown>>()
 
     const { t } = useTranslation('common');
 
@@ -68,10 +72,10 @@ export const TotalOverview = observer(function({ mode }) {
     return (<>
         {mode == 'desktop' ? <>
             <Grid md={3} xs={6}>
-                <DonutDiagram data={factDiagram} title={t('FactSpendingHeader')} />
+                <DoughnutDiagram data={factDiagram} title={t('FactSpendingHeader')} />
             </Grid>
             <Grid md={3} xs={6}>
-                <DonutDiagram data={planDiagram} title={t('PlanSpendingHeader')} />
+                <DoughnutDiagram data={planDiagram} title={t('PlanSpendingHeader')} />
             </Grid></> : <></>}
         {mode == 'desktop' || mode == 'mdiagrams' ? <>
             <Grid md={6} xs={12}>

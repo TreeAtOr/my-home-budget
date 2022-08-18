@@ -10,17 +10,14 @@ import { useRouter } from 'next/router';
 export default observer(function Home() {
     const router = useRouter()
     useEffect(() => {
-        if(!recordsStore.session) router.push('/auth')
+        if (!recordsStore.session) router.push('/auth')
     })
 
     return (
         <Container fluid alignItems='center' justify='center' className="container" style={{ padding: '0 0 0 0' }}>
             <Budget
                 key={recordsStore.session?.user.id}
-                session={recordsStore.session}
-                logout={() => {
-                    recordsStore.supabase.auth.signOut()
-                }} />
+            />
         </Container>
     )
 })

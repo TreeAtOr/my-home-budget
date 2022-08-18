@@ -1,7 +1,8 @@
 import { Modal, Button, Text, Input, Row, Checkbox, Spacer } from "@nextui-org/react";
 import useTranslation from "next-translate/useTranslation";
-
-export function MagicLinkModal({ isVisible, closeHandler }) {
+import { IAbstractModalProps } from "../../types/IAbstractModalProps";
+interface IMagicLinkModalProps extends IAbstractModalProps {}
+export function MagicLinkModal({ isVisible, closeHandler }: IMagicLinkModalProps) {
     const { t } = useTranslation('common')
 
     return (<Modal

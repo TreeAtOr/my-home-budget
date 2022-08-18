@@ -17,7 +17,7 @@ export default function Auth() {
 
   const { t } = useTranslation('common');
 
-  const handleLogin = async (email) => {
+  const handleLogin = async (email: string) => {
     try {
       setLoading(true)
       const { error } = await recordsStore.supabase.auth.signIn({ email })
@@ -31,7 +31,7 @@ export default function Auth() {
     }
   }
 
-  const handleOAuth = async (provider) => {
+  const handleOAuth = async (provider: "google") => {
     try {
       setLoading(true)
       const { error } = await recordsStore.supabase.auth.signIn({ provider })

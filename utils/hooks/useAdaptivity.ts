@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Sizes } from "../types";
 
-function widthToBreakpoints(width) {
+function widthToBreakpoints(width: Number): Sizes {
     if (width < 650) return 'xs';
     if (width > 650 && width <= 960) return 'sm';
     if (width > 960 && width <= 1280) return 'md';
@@ -10,7 +11,7 @@ function widthToBreakpoints(width) {
 
 
 export default function useAdaptivity() {
-    const [status, setStatus] = useState('md');
+    const [status, setStatus] = useState<Sizes>('md');
 
     useEffect(() => {
         setStatus(widthToBreakpoints(window.innerWidth))

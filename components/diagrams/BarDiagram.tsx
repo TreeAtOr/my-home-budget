@@ -1,7 +1,12 @@
 import { Container, Card, useTheme, Text, Row, Col } from '@nextui-org/react';
+import { ChartData } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+interface IBarDiagramProps {
+    data: ChartData<"bar", number[], unknown>,
+    title: string
+}
 
-export default function BarDiagram({ data, title }) {
+export default function BarDiagram({ data, title }: IBarDiagramProps) {
     return (
         <Card css={{ mw: "925px", mh:"493px" }}>
             <Card.Header>
