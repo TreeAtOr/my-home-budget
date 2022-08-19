@@ -6,7 +6,7 @@ import { AddRecordModal } from "./modals/AddRecordModal";
 import { ErrorModal } from "./modals/ErrorModal";
 import { InformationModal } from "./modals/InformationModal";
 import { SelectPeriodModal } from "./modals/SelectPeriodModal";
-import { recordsStore } from '../store/RecordsStore';
+import { store } from '../store/Store';
 import useTranslation from "next-translate/useTranslation";
 import { LayoutMode } from "../utils/hooks/useAdaptiveMode";
 import { ITableRecord } from "../types/ITableRecord";
@@ -29,21 +29,21 @@ export default observer(
         const [isPeriodPickerVisible, setPeriodPickerVisible] = useState(false);
 
         const [periodString, setPeriodString] = useState("")
-        useEffect(() => setPeriodString(recordsStore.periodString), [recordsStore.periodString])
+        useEffect(() => setPeriodString(store.periodString), [store.periodString])
 
         const submitAddPlanHandler = (item: ITableRecord, repeats: IRepeatConditions) => {
-            if (!repeats) recordsStore.createRecord("plan", item)
-            else recordsStore.createPeriodicRecords("plan", item, repeats)
+            if (!repeats) store.createRecord("plan", item)
+            else store.createPeriodicRecords("plan", item, repeats)
             setAddPlanVisible(false)
         }
         const submitAddFactHandler = (item: ITableRecord, repeats: IRepeatConditions) => {
-            if (!repeats) recordsStore.createRecord("fact", item)
-            else recordsStore.createPeriodicRecords("fact", item, repeats)
+            if (!repeats) store.createRecord("fact", item)
+            else store.createPeriodicRecords("fact", item, repeats)
             setAddFactVisible(false)
         }
 
         const submitPeriodPickerHandler = (from: Date, to: Date) => {
-            recordsStore.setPeriod(from, to)
+            store.setPeriod(from, to)
             setPeriodPickerVisible(false)
         }
 

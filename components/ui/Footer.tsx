@@ -1,7 +1,7 @@
 import { Col, Container, Link, Row, Spacer, Text } from '@nextui-org/react'
 import { useRouter } from 'next/router'
 import setLanguage from 'next-translate/setLanguage'
-import { recordsStore } from '../../store/RecordsStore'
+import { store } from '../../store/Store'
 import { observer } from 'mobx-react-lite'
 
 export default observer(
@@ -19,7 +19,7 @@ export default observer(
                 </Col>
                 <Col>
                     <Row><Spacer x={1} /></Row>
-                    <Row><Link onClick={() => recordsStore.supabase.auth.signOut()}>Logout</Link><Spacer x={2} /></Row>
+                    <Row><Link onClick={() => store.supabase.auth.signOut()}>Logout</Link><Spacer x={2} /></Row>
                     <Row><Link onClick={() => router.push('/report')}>Report bug</Link></Row>
                 </Col>
             </Row>

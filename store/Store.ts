@@ -12,7 +12,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 const DEFAULT_PERIOD: [Date, Date] = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
 type TableDestination = "fact" | "plan"
-export class RecordsStore {
+export class Store {
     period: [Date, Date]
     records = new Map<string, ITableRecord[]>([["fact", []], ["plan", []]])
     supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -135,4 +135,4 @@ export class RecordsStore {
     }
 }
 
-export const recordsStore = new RecordsStore()
+export const store = new Store()

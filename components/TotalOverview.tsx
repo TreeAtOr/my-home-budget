@@ -3,7 +3,7 @@ import { ChartData } from "chart.js"
 import { observer } from "mobx-react-lite"
 import useTranslation from "next-translate/useTranslation"
 import { useEffect, useState } from "react"
-import { recordsStore } from "../store/RecordsStore"
+import { store } from "../store/Store"
 import { LayoutMode } from "../utils/hooks/useAdaptiveMode"
 import BarDiagram from "./diagrams/BarDiagram"
 import DoughnutDiagram from "./diagrams/DoughnutDiagram"
@@ -31,7 +31,7 @@ export const TotalOverview = observer(function({ mode }: ITotalOverviewProps) {
     const { t } = useTranslation('common');
 
     useEffect(() => {
-        if (recordsStore.total === undefined) return
+        if (store.total === undefined) return
         const _fact = {
             labels: [],
             datasets: [{
@@ -49,7 +49,7 @@ export const TotalOverview = observer(function({ mode }: ITotalOverviewProps) {
             }]
         }
 
-        for (let i of recordsStore.total) {
+        for (let i of store.total) {
             _fact.labels.push(i.total_kind)
             _fact.datasets[0].data.push(i.total_fact)
             _fact.datasets[0].backgroundColor.push(getColorByName(i.total_kind))
@@ -67,7 +67,7 @@ export const TotalOverview = observer(function({ mode }: ITotalOverviewProps) {
             labels: _fact.labels,
             datasets: [_fact.datasets[0], _plan.datasets[0]]
         })
-    }, [recordsStore.total])
+    }, [store.total])
 
     return (<>
         {mode == 'desktop' ? <>
@@ -83,7 +83,7 @@ export const TotalOverview = observer(function({ mode }: ITotalOverviewProps) {
             </Grid>
             <Grid md={12} xs={12}>
                 <Col>
-                    <TotalTable data={recordsStore.total} rowsPerPage={mode == 'desktop' ? 6 : 5} />
+                    <TotalTable data={store.total} rowsPerPage={mode == 'desktop' ? 6 : 5} />
                 </Col>
             </Grid>
         </> : <></>}

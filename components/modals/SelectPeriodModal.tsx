@@ -2,7 +2,7 @@ import { Modal, Button, Text, Input, Grid, Checkbox, Spacer } from "@nextui-org/
 import { observer } from "mobx-react-lite";
 import useTranslation from "next-translate/useTranslation";
 import { useEffect, useState } from "react";
-import { recordsStore } from "../../store/RecordsStore";
+import { store } from "../../store/Store";
 import { IAbstractModalProps } from "../../types/IAbstractModalProps";
 interface ISelectPeriodModalProps extends IAbstractModalProps {
     submitHandler: (from: Date, to: Date) => void;
@@ -14,9 +14,9 @@ export const SelectPeriodModal = observer(
         const [to, setTo] = useState("")
 
         useEffect(() => {
-            setFrom(recordsStore.period[0].toLocaleDateString())
-            setTo(recordsStore.period[1].toLocaleDateString())
-        }, [recordsStore.period])
+            setFrom(store.period[0].toLocaleDateString())
+            setTo(store.period[1].toLocaleDateString())
+        }, [store.period])
 
         const setPeriodHandler = () => {
             console.log(from, to);

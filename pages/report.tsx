@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Auth from '../components/Auth'
 import Budget from '../components/Budget'
 import { Button, Col, Container, Input, Link, Row, Spacer, Text, Textarea } from '@nextui-org/react'
-import { recordsStore } from '../store/RecordsStore'
+import { store } from '../store/Store'
 import { observer } from 'mobx-react-lite'
 import useAdaptivity from '../utils/hooks/useAdaptivity'
 import { useRouter } from 'next/router'
@@ -53,7 +53,7 @@ export default function Report() {
                     <Button
                         css={size == 'xs' ? { width: "100%" } : undefined}
                         onPress={() => {
-                            recordsStore.reportBug(message, error)
+                            store.reportBug(message, error)
                             router.push('/')
                         }}
                         >

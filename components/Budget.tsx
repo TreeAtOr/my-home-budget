@@ -6,7 +6,7 @@ import Footer from './ui/Footer'
 import { useAdaptiveMode } from '../utils/hooks/useAdaptiveMode';
 import BudgetHeader from './BudgetHeader';
 import { observer } from 'mobx-react-lite';
-import { recordsStore } from '../store/RecordsStore';
+import { store } from '../store/Store';
 import { TotalOverview } from './TotalOverview'
 import { ITableRecord } from '../types/ITableRecord';
 
@@ -33,7 +33,7 @@ export default observer(
         }
 
         const onEditFactRecordSubmitted = (item) => {
-            recordsStore.updateRecord("fact", item)
+            store.updateRecord("fact", item)
             setEditFactVisible(false)
             setRecordToEdit(undefined)
         }
@@ -50,13 +50,13 @@ export default observer(
         }
 
         const onEditPlanRecordSubmitted = (item) => {
-            recordsStore.updateRecord("plan", item)
+            store.updateRecord("plan", item)
             setEditPlanVisible(false)
             setRecordToEdit(undefined)
         }
 
-        const onDeletePlanRecord = (id: number) => recordsStore.deleteRecord("plan", id)
-        const onDeleteFactRecord = (id: number) => recordsStore.deleteRecord("fact", id)
+        const onDeletePlanRecord = (id: number) => store.deleteRecord("plan", id)
+        const onDeleteFactRecord = (id: number) => store.deleteRecord("fact", id)
 
         return (
             <Container gap={mode !== 'desktop' ? 0 : 4} justify="flex-start">
@@ -86,7 +86,7 @@ export default observer(
                             <Col><SpendingTable
                                 onDelete={onDeletePlanRecord}
                                 onEdit={onEditPlanRecordOpen}
-                                data={recordsStore.records.get("plan")}
+                                data={store.records.get("plan")}
                                 rowsPerPage={mode == 'desktop' ? 10 : 11}
                             /></Col>
                         </Grid> : <></>
@@ -96,7 +96,7 @@ export default observer(
                             <Col><SpendingTable
                                 onDelete={onDeleteFactRecord}
                                 onEdit={onEditFactRecordOpen}
-                                data={recordsStore.records.get("fact")}
+                                data={store.records.get("fact")}
                                 rowsPerPage={mode == 'desktop' ? 10 : 11}
                             /></Col>
                         </Grid> : <></>

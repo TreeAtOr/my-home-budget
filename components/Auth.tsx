@@ -6,7 +6,7 @@ import { MagicLinkModal } from './modals/MagicLinkModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import useAdaptivity from '../utils/hooks/useAdaptivity';
-import { recordsStore } from '../store/RecordsStore';
+import { store } from '../store/Store';
 
 export default function Auth() {
   const [loading, setLoading] = useState(false)
@@ -20,7 +20,7 @@ export default function Auth() {
   const handleLogin = async (email: string) => {
     try {
       setLoading(true)
-      const { error } = await recordsStore.supabase.auth.signIn({ email })
+      const { error } = await store.supabase.auth.signIn({ email })
       if (error) throw error
       setAlertVisible(true)
     } catch (error) {
@@ -34,7 +34,7 @@ export default function Auth() {
   const handleOAuth = async (provider: "google") => {
     try {
       setLoading(true)
-      const { error } = await recordsStore.supabase.auth.signIn({ provider })
+      const { error } = await store.supabase.auth.signIn({ provider })
       if (error) throw error
     } catch (error) {
       setMessage(error.error_description || error.message)

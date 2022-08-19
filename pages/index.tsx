@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Auth from '../components/Auth'
 import Budget from '../components/Budget'
 import { Button, Card, Col, Container, Grid, Image, Link, Row, Spacer, Text } from '@nextui-org/react'
-import { recordsStore } from '../store/RecordsStore'
+import { store } from '../store/Store'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
@@ -19,7 +19,7 @@ export default observer(function Home() {
     
   })
   const handleLogInButton = () => {
-    if (recordsStore.session) router.push('/overview')
+    if (store.session) router.push('/overview')
     else router.push('/auth')
   }
   return (
