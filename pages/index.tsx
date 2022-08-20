@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Auth from '../components/Auth'
 import Budget from '../components/Budget'
 import { Button, Card, Col, Container, Grid, Image, Link, Row, Spacer, Text } from '@nextui-org/react'
 import { store } from '../store/Store'
@@ -16,8 +15,8 @@ export default observer(function Home() {
   const { t } = useTranslation('common')
   const size = useAdaptivity()
   useEffect(()=> {
-    
-  })
+    if(store.auth_state == "PASSWORD_RECOVERY") router.push('auth')
+  }, [store.auth_state])
   const handleLogInButton = () => {
     if (store.session) router.push('/overview')
     else router.push('/auth')

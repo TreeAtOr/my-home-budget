@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from "mobx";
 
-import { createClient } from '@supabase/supabase-js'
+import { AuthChangeEvent, createClient, PostgrestError } from '@supabase/supabase-js'
 import { getCookie, hasCookie, setCookie } from "cookies-next";
 import { ITableRecord } from "../types/ITableRecord";
 import { ITotalTableRecord } from "../types/ITotalTableRecord";
@@ -12,12 +12,16 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 const DEFAULT_PERIOD: [Date, Date] = [new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), new Date(Date.now())]
 type TableDestination = "fact" | "plan"
+type OAuthProviders = "google"
 export class Store {
     period: [Date, Date]
     records = new Map<string, ITableRecord[]>([["fact", []], ["plan", []]])
     supabase = createClient(supabaseUrl, supabaseAnonKey)
     session = this.supabase.auth.session()
     total: ITotalTableRecord[] = []
+
+    error: Error | PostgrestError = null
+    auth_state: AuthChangeEvent
     constructor() {
         makeAutoObservable(this, {}, { deep: true })
         console.log(this.period);
@@ -28,6 +32,9 @@ export class Store {
             this.period = DEFAULT_PERIOD
         }
         this.supabase.auth.onAuthStateChange((_event, session) => {
+            this.auth_state = _event
+            console.log(_event);
+            
             this.session = session
             if (!session) return;
             console.log(this.period);
@@ -41,11 +48,15 @@ export class Store {
         return `${this.period[0].toDateString()}-${this.period[1].toDateString()}`
     }
 
+    clearError() {
+        this.error = null
+    }
+
     async createRecord(dest: TableDestination, record: ITableRecord) {
         let { data, error, status } = await this.supabase
             .from<WithId<ITableRecord>>(dest)
             .insert([record], { returning: "minimal" })
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (!data) return;
 
         this.readRecords(dest)
@@ -58,15 +69,15 @@ export class Store {
         while (date < to) {
             records.push({ ...record, date })
             date = new Date(date.setFullYear(
-                date.getFullYear() + years, 
-                date.getMonth() + months, 
+                date.getFullYear() + years,
+                date.getMonth() + months,
                 date.getDate() + days))
         }
 
         let { data, error, status } = await this.supabase
             .from<WithId<ITableRecord>>(dest)
             .insert(records, { returning: "minimal" })
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (!data) return;
 
         this.readRecords(dest)
@@ -79,7 +90,7 @@ export class Store {
             .select(`id,label,amount,date,kind`)
             .gte('date', this.period[0].toISOString())
             .lte('date', this.period[1].toISOString())
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (data) this.records.set(dest, data)
     }
     async deleteRecord(dest, id) {
@@ -87,7 +98,7 @@ export class Store {
             .from(dest)
             .delete()
             .eq("id", id)
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (!data) return;
 
         this.readRecords(dest)
@@ -98,7 +109,7 @@ export class Store {
             .from(dest)
             .update(record)
             .eq("id", record.id)
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (!data || data.length === 0) return
 
         this.readRecords(dest)
@@ -110,7 +121,7 @@ export class Store {
             _to: this.period[1].toISOString(),
             _from: this.period[0].toISOString()
         })
-        if (error && status !== 406) throw error
+        if (error && status !== 406) this.error = error
         if (data) this.total = data
     }
 
@@ -132,6 +143,38 @@ export class Store {
             .from("reports")
             .insert([report], { returning: "minimal" })
         if (error && status !== 406) alert("Error was happened during bug report process. Please, contact developer ")
+    }
+
+    async handleLogin(email: string) {
+        const { error } = await store.supabase.auth.signIn({ email })
+        if (error) throw error
+    }
+
+
+    async handleOAuth(provider: OAuthProviders) {
+        const { error } = await store.supabase.auth.signIn({ provider })
+        if (error) throw error
+    }
+
+    async handlePasswordLogin(email: string, password: string) {
+        const { error } = await store.supabase.auth.signIn({ email, password })
+        if (error) throw error
+    }
+    async handlePasswordSignUp(email: string, password: string) {
+        const { error } = await store.supabase.auth.signUp({ email, password })
+        if (error) throw error
+    }
+
+    async handleResetPassword(email: string) {
+        console.log(email);
+        
+        const { error } = await store.supabase.auth.api.resetPasswordForEmail(email)
+        if (error) throw error
+    }
+
+    async updatePassword(password: string) {
+        const { error, data } = await store.supabase.auth.api.updateUser(this.session.access_token, { password })
+        if (error) throw error
     }
 }
 

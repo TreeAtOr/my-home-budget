@@ -71,6 +71,11 @@
     "formEvery": "Every",
     "formDays": "Days",
     "formMonths": "Months",
-    "formYears": "Years"
+    "formYears": "Years",
+    "placeholderPassword": "Password",
+    "SingPasswordEmail": "Sing via email and password",
+    "buttonResetPassword": "Reset Password",
+    "ResetPassword": "Reset Password",
+    "ResetPasswordContent": "You are trying to reset your password"
 
 }
