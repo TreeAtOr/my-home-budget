@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import Auth from '../components/Auth'
 import Budget from '../components/Budget'
 import { Col, Container, Link, Row, Spacer, Text } from '@nextui-org/react'
 import { store } from '../store/Store'
